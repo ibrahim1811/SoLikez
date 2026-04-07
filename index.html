@@ -2040,7 +2040,11 @@ function buildPeer(code, remoteUid) {
 
   // ICE candidate → Firebase
   pc.onicecandidate = ({ candidate }) => {
-    if (!candidate) return;
+    if (!candidate) {
+      console.log(`[RTC] ICE gathering tamamlandı → ${remoteUid.slice(0,6)}`);
+      return;
+    }
+    console.log(`[RTC] ICE gönderiliyor → ${remoteUid.slice(0,6)} (${candidate.type})`);
     push(ref(db, `rooms/${code}/rtc/${remoteUid}/${currentUser.uid}/ice`), candidate.toJSON());
   };
 
