@@ -1990,8 +1990,9 @@ function listenSignals(code) {
       try {
         await ps.pc.setRemoteDescription({ type: 'answer', sdp: data.sdp });
         ps.hasRemote = true;
-        console.log(`[RTC] answer set ← ${fromUid.slice(0,6)}`);
+        console.log(`[RTC] answer set ← ${fromUid.slice(0,6)}, sigState=${ps.pc.signalingState}, iceState=${ps.pc.iceConnectionState}, buf=${ps.iceBuf.length}`);
         await flushIce(fromUid);
+        console.log(`[RTC] flushIce done, connState=${ps.pc.connectionState}`);
       } catch(e) { console.error('[RTC] setAnswer:', e); }
     });
 
@@ -2060,14 +2061,14 @@ function buildPeer(code, remoteUid) {
       delete peerStates[remoteUid]; delete peerConnections[remoteUid];
       showToast('Bağlantı koptu, yeniden deneniyor...');
       setTimeout(() => {
-        if (knownParticipants[remoteUid] && currentUser.uid < remoteUid)
-          sendOffer(code, remoteUid);
+        if (knownParticipants[remoteUid]) sendOffer(code, remoteUid);
       }, 2000);
     }
   };
 
-  pc.onicegatheringstatechange = () =>
-    console.log(`[RTC] ICE gathering ${remoteUid.slice(0,6)} = ${pc.iceGatheringState}`);
+  pc.oniceconnectionstatechange = () => {
+    console.log(`[RTC] ICE conn ${remoteUid.slice(0,6)} = ${pc.iceConnectionState}`);
+  };
 
   return pc;
 }
