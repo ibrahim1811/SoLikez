@@ -1394,8 +1394,10 @@ let camOn          = true;
 let screenOn       = false;
 let pendingScreenRequester = null;
 
-// WebRTC: peerConnections[remoteUid] = RTCPeerConnection
+// WebRTC: peerConnections[remoteUid] = RTCPeerConnection (alias)
 const peerConnections = {};
+// peerStates: tam state { pc, remoteStream, iceBuf, hasRemote }
+const peerStates = {};
 // Track which offers we've already processed (avoid duplicates)
 const processedOffers = new Set();
 
@@ -1874,12 +1876,14 @@ function listenParticipants(code) {
       if (!knownParticipants[uid]) {
         knownParticipants[uid] = info;
         getOrCreateRemoteTile(uid, info.username);
-        // Her zaman YENİ gelen offer atar.
-        // Biz yeni geldiysek (knownParticipants boştu) → herkese offer at
-        // Karşı taraf yeni geldiyse → karşı taraf bize offer atacak, biz bekleriz
-        // Ama eğer karşı taraf daha küçük UID'ye sahipse biz offer atarız
-        // Basit kural: her ikisi de offer atar, answer gelince stable olur
-        await createOffer(uid);
+        // SADECE küçük UID offer atar — büyük UID offer bekler
+        // Bu sayede ikisi de aynı anda offer atmaz
+        if (currentUser.uid < uid) {
+          console.log(`[WebRTC] Ben offer atıyorum → ${uid.slice(0,6)}`);
+          await createOffer(uid);
+        } else {
+          console.log(`[WebRTC] Offer bekliyorum ← ${uid.slice(0,6)}`);
+        }
       }
     }
 
@@ -1896,64 +1900,74 @@ function listenParticipants(code) {
     // Katılımcı sayısını güncelle
     const countEl = document.getElementById('participantCount');
     if (countEl) countEl.textContent = `👤 ${Object.keys(data).length}`;
-
-    // Host gittiyse odayı kapat
-    const roomSnap = await get(ref(db, `rooms/${code}/host`));
-    if (!roomSnap.exists() && currentRoom) {
-      showToast('Host odadan ayrıldı, oda kapatıldı.');
-      await leaveRoom(true);
-    }
   });
 }
 
 // ══════════════════════════════════════════════════════
-//  WebRTC SIGNALING via Firebase
+//  WebRTC SIGNALING — düzgün state machine
 // ══════════════════════════════════════════════════════
-// Signal path: /rooms/{code}/signals/{targetUid}/{senderUid}/...
-//   offer:     { sdp, type:'offer', from }
-//   answer:    { sdp, type:'answer', from }
-//   ice:       pushed to /ice array
+// Kural: Alfabetik olarak KÜÇÜK UID offer atar, BÜYÜK UID bekler.
+// ICE candidates remote description set edilmeden önce buffer'lanır.
+
+const peerStates = {}; // uid → { pc, remoteStream, iceBuf, hasRemote }
 
 function sigRef(target, sender) {
   return ref(db, `rooms/${currentRoom}/signals/${target}/${sender}`);
 }
-function iceRef(target, sender) {
-  return ref(db, `rooms/${currentRoom}/signals/${target}/${sender}/ice`);
-}
 
 function listenSignals(code) {
-  // Listen to signals addressed to me
   onValue(ref(db, `rooms/${code}/signals/${currentUser.uid}`), async (snap) => {
     if (!snap.exists()) return;
     const senders = snap.val();
+
     for (const [senderUid, data] of Object.entries(senders)) {
       if (senderUid === currentUser.uid) continue;
+      const state = peerStates[senderUid];
 
-      // Process offer
-      if (data.type === 'offer' && !processedOffers.has(data.ts)) {
-        processedOffers.add(data.ts);
-        await handleOffer(senderUid, data);
+      // ── OFFER geldi ──
+      if (data.sdp && data.type === 'offer') {
+        // Biz de offer attıysak ve biz büyük UID'yiz → geri çekil, karşının offer'ını kabul et
+        if (state?.pc && state.pc.signalingState === 'have-local-offer') {
+          if (currentUser.uid > senderUid) {
+            // Geri çekil
+            state.pc.close();
+            delete peerStates[senderUid];
+          } else {
+            // Biz küçük UID, biz kazandık → karşının offer'ını yoksay
+            continue;
+          }
+        }
+        // Daha önce işledik mi? ts ile kontrol
+        if (processedOffers.has(`${senderUid}-${data.ts}`)) continue;
+        processedOffers.add(`${senderUid}-${data.ts}`);
+        await handleOffer(senderUid, data.sdp);
       }
 
-      // Process answer
-      if (data.type === 'answer') {
-        const pc = peerConnections[senderUid];
-        if (pc && pc.signalingState !== 'stable') {
+      // ── ANSWER geldi ──
+      if (data.sdp && data.type === 'answer') {
+        const ps = peerStates[senderUid];
+        if (ps?.pc && ps.pc.signalingState === 'have-local-offer') {
           try {
-            await pc.setRemoteDescription({ type: 'answer', sdp: data.sdp });
-          } catch(e) { console.warn('setRemoteDescription answer:', e); }
+            await ps.pc.setRemoteDescription({ type: 'answer', sdp: data.sdp });
+            ps.hasRemote = true;
+            // Buffer'lanmış ICE adaylarını uygula
+            await flushIceBuf(senderUid);
+          } catch(e) { console.warn('setRemoteDesc answer:', e); }
         }
       }
 
-      // Process ICE candidates
+      // ── ICE candidates ──
       if (data.ice) {
-        const pc = peerConnections[senderUid];
-        if (pc) {
-          for (const candidate of Object.values(data.ice)) {
-            if (candidate && candidate.candidate) {
-              try { await pc.addIceCandidate(new RTCIceCandidate(candidate)); }
-              catch(e) { /* ignore stale candidates */ }
-            }
+        const ps = peerStates[senderUid];
+        if (!ps) continue;
+        for (const candidate of Object.values(data.ice)) {
+          if (!candidate?.candidate) continue;
+          if (ps.hasRemote) {
+            try { await ps.pc.addIceCandidate(new RTCIceCandidate(candidate)); }
+            catch(e) {}
+          } else {
+            ps.iceBuf = ps.iceBuf || [];
+            ps.iceBuf.push(candidate);
           }
         }
       }
@@ -1961,8 +1975,23 @@ function listenSignals(code) {
   });
 }
 
+async function flushIceBuf(uid) {
+  const ps = peerStates[uid];
+  if (!ps?.iceBuf?.length) return;
+  for (const c of ps.iceBuf) {
+    try { await ps.pc.addIceCandidate(new RTCIceCandidate(c)); } catch(e) {}
+  }
+  ps.iceBuf = [];
+}
+
 async function createOffer(remoteUid) {
-  const pc = getOrCreatePeer(remoteUid);
+  // Zaten var ve bağlıysa tekrar atma
+  const existing = peerStates[remoteUid];
+  if (existing?.pc && ['have-local-offer','have-remote-offer','stable'].includes(existing.pc.signalingState)) {
+    if (existing.pc.connectionState === 'connected') return;
+  }
+
+  const pc = createPeerConnection(remoteUid);
   try {
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
@@ -1970,85 +1999,94 @@ async function createOffer(remoteUid) {
       type: 'offer', sdp: offer.sdp,
       from: currentUser.uid, ts: Date.now()
     });
+    console.log(`[WebRTC] Offer gönderildi → ${remoteUid.slice(0,6)}`);
   } catch(e) { console.error('createOffer:', e); }
 }
 
-async function handleOffer(senderUid, data) {
-  // Glare: ikisi aynı anda offer attıysa, küçük UID kazanır
-  if (peerConnections[senderUid] &&
-      peerConnections[senderUid].signalingState === 'have-local-offer') {
-    if (currentUser.uid > senderUid) {
-      // Biz geri çekiliyoruz, karşının offer'ını kabul et
-      peerConnections[senderUid].close();
-      delete peerConnections[senderUid];
-    } else {
-      // Biz kazandık, karşının offer'ını yoksay
-      return;
-    }
-  }
-  const pc = getOrCreatePeer(senderUid);
+async function handleOffer(senderUid, sdp) {
+  const pc = createPeerConnection(senderUid);
   try {
-    await pc.setRemoteDescription({ type: 'offer', sdp: data.sdp });
+    await pc.setRemoteDescription({ type: 'offer', sdp });
+    peerStates[senderUid].hasRemote = true;
+    await flushIceBuf(senderUid);
     const answer = await pc.createAnswer();
     await pc.setLocalDescription(answer);
     await set(sigRef(senderUid, currentUser.uid), {
       type: 'answer', sdp: answer.sdp,
       from: currentUser.uid, ts: Date.now()
     });
+    console.log(`[WebRTC] Answer gönderildi → ${senderUid.slice(0,6)}`);
   } catch(e) { console.error('handleOffer:', e); }
 }
 
-function getOrCreatePeer(remoteUid) {
-  if (peerConnections[remoteUid]) return peerConnections[remoteUid];
-
-  const pc = new RTCPeerConnection(ICE_SERVERS);
-  peerConnections[remoteUid] = pc;
-
-  // Add local tracks
-  if (localStream) {
-    localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+function createPeerConnection(remoteUid) {
+  // Eskisini kapat
+  if (peerStates[remoteUid]?.pc) {
+    peerStates[remoteUid].pc.close();
   }
 
-  // ICE candidate → send to remote via Firebase
+  const pc = new RTCPeerConnection(ICE_SERVERS);
+  const remoteStream = new MediaStream();
+  peerStates[remoteUid] = { pc, remoteStream, iceBuf: [], hasRemote: false };
+  // peerConnections alias (ekran paylaşımı vs için)
+  peerConnections[remoteUid] = pc;
+
+  // Local track'leri ekle
+  if (localStream) {
+    localStream.getTracks().forEach(track => {
+      pc.addTrack(track, localStream);
+    });
+  }
+
+  // ICE → Firebase'e gönder
   pc.onicecandidate = (e) => {
-    if (e.candidate) {
-      push(iceRef(remoteUid, currentUser.uid), e.candidate.toJSON());
-    }
+    if (!e.candidate) return;
+    push(ref(db, `rooms/${currentRoom}/signals/${remoteUid}/${currentUser.uid}/ice`),
+      e.candidate.toJSON());
   };
 
-  // Remote track received → attach to tile
-  const remoteStream = new MediaStream();
+  // Remote track → tile'a bağla
   pc.ontrack = (e) => {
+    console.log(`[WebRTC] Track alındı ← ${remoteUid.slice(0,6)} kind=${e.track.kind}`);
+    e.track.onunmute = () => {
+      remoteStream.addTrack(e.track);
+      const info = knownParticipants[remoteUid];
+      getOrCreateRemoteTile(remoteUid, info?.username || remoteUid.slice(0,6));
+      attachRemoteStream(remoteUid, remoteStream);
+    };
+    // Bazen unmute hemen ateşlenmez, direkt de dene
     remoteStream.addTrack(e.track);
-    // Get username from known participants
     const info = knownParticipants[remoteUid];
-    const username = info?.username || remoteUid.slice(0,6);
-    getOrCreateRemoteTile(remoteUid, username);
+    getOrCreateRemoteTile(remoteUid, info?.username || remoteUid.slice(0,6));
     attachRemoteStream(remoteUid, remoteStream);
   };
 
   pc.onconnectionstatechange = () => {
-    const state = pc.connectionState;
-    if (state === 'connected') {
-      showToast('Bağlantı kuruldu.');
-    } else if (state === 'failed' || state === 'disconnected') {
-      showToast('Bağlantı kesildi, yeniden bağlanılıyor...');
-      closePeer(remoteUid);
+    const s = pc.connectionState;
+    console.log(`[WebRTC] ${remoteUid.slice(0,6)} → ${s}`);
+    if (s === 'connected') {
+      showToast('Bağlantı kuruldu ✓');
+    } else if (s === 'failed') {
+      showToast('Bağlantı başarısız, yeniden deneniyor...');
+      delete peerStates[remoteUid];
+      delete peerConnections[remoteUid];
       setTimeout(() => {
-        if (knownParticipants[remoteUid] && currentUser.uid < remoteUid) {
-          createOffer(remoteUid);
-        }
-      }, 2000);
+        if (knownParticipants[remoteUid]) createOffer(remoteUid);
+      }, 2500);
     }
+  };
+
+  pc.oniceconnectionstatechange = () => {
+    console.log(`[WebRTC] ICE ${remoteUid.slice(0,6)} → ${pc.iceConnectionState}`);
   };
 
   return pc;
 }
 
 function closePeer(uid) {
-  const pc = peerConnections[uid];
-  if (pc) { pc.close(); delete peerConnections[uid]; }
-  // Clean up signals
+  peerStates[uid]?.pc?.close();
+  delete peerStates[uid];
+  delete peerConnections[uid];
   remove(ref(db, `rooms/${currentRoom}/signals/${uid}/${currentUser.uid}`)).catch(()=>{});
   remove(ref(db, `rooms/${currentRoom}/signals/${currentUser.uid}/${uid}`)).catch(()=>{});
 }
@@ -2323,7 +2361,7 @@ window.leaveRoom = async function(forced = false) {
   if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
 
   // Close all peer connections
-  for (const uid of Object.keys(peerConnections)) closePeer(uid);
+  for (const uid of Object.keys(peerStates)) closePeer(uid);
   Object.keys(knownParticipants).forEach(k => delete knownParticipants[k]);
   processedOffers.clear();
 
