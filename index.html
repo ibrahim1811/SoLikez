@@ -1876,13 +1876,16 @@ function listenParticipants(code) {
       if (!knownParticipants[uid]) {
         knownParticipants[uid] = info;
         getOrCreateRemoteTile(uid, info.username);
-        // SADECE küçük UID offer atar — büyük UID offer bekler
-        // Bu sayede ikisi de aynı anda offer atmaz
-        if (currentUser.uid < uid) {
-          console.log(`[RTC] offer atacağım → ${uid.slice(0,6)}`);
+
+        // joinedAt ile karar ver: daha önce giren offer atar
+        const myJoinedAt    = data[currentUser.uid]?.joinedAt || 0;
+        const theirJoinedAt = info.joinedAt || 0;
+
+        if (myJoinedAt <= theirJoinedAt) {
+          console.log(`[RTC] Ben önce girdim, offer atıyorum → ${uid.slice(0,6)}`);
           await sendOffer(code, uid);
         } else {
-          console.log(`[RTC] offer bekliyorum ← ${uid.slice(0,6)}`);
+          console.log(`[RTC] Karşı önce girdi, offer bekliyorum ← ${uid.slice(0,6)}`);
         }
       }
     }
@@ -1897,7 +1900,7 @@ function listenParticipants(code) {
       }
     }
 
-    // Katılımcı sayısını güncelle
+    // Katılımcı sayısı
     const countEl = document.getElementById('participantCount');
     if (countEl) countEl.textContent = `👤 ${Object.keys(data).length}`;
   });
