@@ -1133,9 +1133,229 @@
     color: var(--text2);
     display: flex; align-items: center; gap: 5px;
   }
-</style>
+
+  /* ══ BEYAZ TAHTA ══ */
+  /* chat sidebar hidden state */
+  .chat-sidebar { transition: width 0.25s ease, opacity 0.25s; }
+  .chat-sidebar.hidden { width: 0 !important; opacity: 0; pointer-events: none; overflow: hidden; padding: 0; }
+
+  /* poll */
+  .poll-opt-row { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:0.5px solid var(--border); }
+  .poll-opt-row:last-child { border-bottom:none; }
+  .poll-opt-label { flex:1; font-size:14px; color:var(--text); }
+  .poll-opt-bar-wrap { flex:2; background:var(--bg3); border-radius:6px; height:8px; overflow:hidden; }
+  .poll-opt-bar { height:100%; background:var(--accent); border-radius:6px; transition:width 0.4s; }
+  .poll-opt-pct { font-size:12px; font-weight:600; color:var(--text2); min-width:32px; text-align:right; }
+  .poll-vote-btn { padding:6px 12px; border-radius:var(--radius-sm); border:1px solid var(--border2); background:var(--bg3); color:var(--text); font-size:12px; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.2s; white-space:nowrap; }
+  .poll-vote-btn:hover { border-color:var(--accent); color:var(--accent2); }
+  .poll-vote-btn.voted { background:rgba(108,99,255,0.15); border-color:var(--accent); color:var(--accent2); }
+
+  .whiteboard-overlay {
+    position: fixed; inset: 0; z-index: 3000;
+    background: var(--bg); display: none;
+    flex-direction: column;
+  }
+  .whiteboard-overlay.open { display: flex; }
+  .wb-topbar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px;
+    background: var(--bg2); border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .wb-title {
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: 15px; color: var(--text); margin-right: 8px;
+  }
+  .wb-tool {
+    width: 34px; height: 34px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--bg3);
+    color: var(--text); font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .wb-tool:hover { border-color: var(--border2); }
+  .wb-tool.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .wb-sep { width: 1px; height: 24px; background: var(--border); margin: 0 4px; }
+  .wb-color {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 2px solid transparent; cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .wb-color:hover { transform: scale(1.15); }
+  .wb-color.active { border-color: #fff; }
+  .wb-size {
+    width: 70px; accent-color: var(--accent);
+  }
+  .wb-close {
+    margin-left: auto; background: rgba(255,79,106,0.12);
+    border: 1px solid rgba(255,79,106,0.3); border-radius: 8px;
+    color: var(--danger); font-size: 13px; font-weight: 600;
+    padding: 6px 14px; cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .wb-close:hover { background: rgba(255,79,106,0.22); }
+  .wb-canvas-wrap {
+    flex: 1; overflow: hidden; position: relative; background: #fff;
+  }
+  #wbCanvas { display: block; cursor: crosshair; touch-action: none; }
+
+  /* ══ KAYIT ══ */
+  .rec-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 14px; padding: 10px 16px;
+    color: var(--text); font-size: 20px; cursor: pointer;
+    transition: all 0.2s; min-width: 56px;
+  }
+  .rec-btn span.ctrl-label { font-size: 10px; font-weight: 500; color: var(--text2); font-family: 'DM Sans', sans-serif; }
+  .rec-btn.recording {
+    background: rgba(255,79,106,0.12);
+    border-color: rgba(255,79,106,0.35);
+    animation: recPulse 1.5s ease-in-out infinite;
+  }
+  .rec-btn.recording .ctrl-label { color: var(--danger); }
+  @keyframes recPulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(255,79,106,0); }
+    50%      { box-shadow: 0 0 0 6px rgba(255,79,106,0.2); }
+  }
+  #waitingScreen {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    position: relative;
+  }
+  .waiting-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 52px;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    animation: slideUp 0.4s cubic-bezier(0.22,1,0.36,1) both;
+  }
+  .waiting-spinner {
+    width: 48px; height: 48px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 20px;
+  }
+  .waiting-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px; font-weight: 700;
+    color: var(--text); margin-bottom: 8px;
+  }
+  .waiting-sub { font-size: 13px; color: var(--text2); line-height: 1.6; }
+  .waiting-code {
+    margin-top: 20px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 13px; color: var(--text2);
+  }
+  .waiting-code span {
+    font-weight: 700; color: var(--text);
+    letter-spacing: 2px; font-size: 15px;
+  }
+  .btn-cancel-wait {
+    margin-top: 18px;
+    background: none;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    color: var(--text2); font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    padding: 8px 20px; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-cancel-wait:hover { border-color: var(--danger); color: var(--danger); }
+
+  /* Host: gelen istek bildirimi */
+  .join-request-toast {
+    position: fixed;
+    top: 16px; right: 16px;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 14px;
+    padding: 14px 18px;
+    z-index: 4000;
+    min-width: 280px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    animation: slideDown2 0.3s cubic-bezier(0.22,1,0.36,1) both;
+    display: none;
+  }
+  .join-request-toast.show { display: block; }
+  @keyframes slideDown2 {
+    from { opacity:0; transform: translateY(-12px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+  .jrt-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .jrt-sub   { font-size: 12px; color: var(--text2); margin-bottom: 12px; }
+  .jrt-btns  { display: flex; gap: 8px; }
+  .jrt-approve {
+    flex:1; padding: 7px; background: rgba(34,211,160,0.15);
+    border: 1px solid rgba(34,211,160,0.3); border-radius: 8px;
+    color: var(--success); font-size: 12px; font-weight: 600;
+    cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s;
+  }
+  .jrt-approve:hover { background: rgba(34,211,160,0.25); }
+  .jrt-deny {
+    flex:1; padding: 7px; background: rgba(255,79,106,0.1);
+    border: 1px solid rgba(255,79,106,0.25); border-radius: 8px;
+    color: var(--danger); font-size: 12px; font-weight: 600;
+    cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s;
+  }
+  .jrt-deny:hover { background: rgba(255,79,106,0.2); }
+
+  /* ══ BAĞLANTI KALİTESİ ══ */
+  .quality-badge {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 4px 10px;
+    font-size: 11px; font-weight: 600; color: var(--text2);
+    cursor: pointer; transition: border-color 0.2s; position: relative;
+  }
+  .quality-badge:hover { border-color: var(--border2); }
+  .quality-bars { display: flex; align-items: flex-end; gap: 2px; height: 14px; }
+  .quality-bar {
+    width: 3px; border-radius: 2px; background: var(--border2);
+    transition: background 0.3s, height 0.3s;
+  }
+  .quality-bar.on { background: var(--success); }
+  .quality-bar.warn { background: var(--warn); }
+  .quality-bar.bad  { background: var(--danger); }
+
+  /* Quality popup */
+  .quality-popup {
+    position: absolute; top: calc(100% + 8px); right: 0;
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 14px 16px;
+    min-width: 220px; z-index: 500;
+    display: none; animation: fadeIn 0.15s;
+  }
+  .quality-popup.open { display: block; }
+  .qp-title { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px; }
+  .qp-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 0.5px solid var(--border); }
+  .qp-row:last-child { border-bottom: none; }
+  .qp-label { font-size: 12px; color: var(--text2); }
+  .qp-val   { font-size: 12px; font-weight: 600; color: var(--text); }</style>
 </head>
 <body>
+
+<!-- ══════════════════ WAITING SCREEN ══════════════════ -->
+<div id="waitingScreen" class="screen">
+  <div class="auth-glow"></div>
+  <div class="waiting-card">
+    <div class="waiting-spinner"></div>
+    <div class="waiting-title">Onay bekleniyor...</div>
+    <div class="waiting-sub">Host seni odaya almak için onaylaması gerekiyor.</div>
+    <div class="waiting-code">Oda kodu: <span id="waitingCode">——</span></div>
+    <button class="btn-cancel-wait" onclick="cancelWaiting()">İptal</button>
+  </div>
+</div>
 
 <!-- ══════════════════ AUTH SCREEN ══════════════════ -->
 <div id="authScreen" class="screen active">
@@ -1192,16 +1412,32 @@
     <div class="lobby-card">
       <div class="lobby-icon create">🎙️</div>
       <h2>Oda Oluştur</h2>
-      <p>Yeni bir oda başlat ve arkadaşlarını davet et. Oda sahibi olarak tam kontrole sahip olursun.</p>
+      <p>Yeni bir oda başlat. İstersen özel kod ve şifre belirle.</p>
+      <div class="field" style="margin-bottom:10px;">
+        <label style="font-size:11px;color:var(--text2);font-weight:500;letter-spacing:0.3px;">ODA KODU (boş bırakırsan otomatik)</label>
+        <input type="text" id="customRoomCode" placeholder="Örn: OYUN1" maxlength="6"
+          style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 13px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;width:100%;outline:none;letter-spacing:2px;font-weight:600;text-transform:uppercase;"
+          oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')">
+      </div>
+      <div class="field" style="margin-bottom:14px;">
+        <label style="font-size:11px;color:var(--text2);font-weight:500;letter-spacing:0.3px;">ODA ŞİFRESİ (isteğe bağlı)</label>
+        <input type="password" id="roomPassword" placeholder="Şifresiz bırakmak için boş bırak"
+          style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 13px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;width:100%;outline:none;">
+      </div>
+      <div class="lobby-error" id="createError" style="margin-bottom:10px;font-size:12px;color:var(--danger);min-height:16px;"></div>
       <button class="btn-create" onclick="openDevicePicker('create')">Oda Oluştur</button>
     </div>
     <div class="lobby-card">
       <div class="lobby-icon join">🔗</div>
       <h2>Odaya Katıl</h2>
-      <p>Sana iletilen 6 haneli oda kodunu girerek anında bağlan.</p>
+      <p>Sana iletilen oda kodunu girerek anında bağlan.</p>
       <div class="join-input-wrap">
         <input type="text" id="joinCodeInput" placeholder="ABC123" maxlength="6" oninput="this.value=this.value.toUpperCase()">
         <button onclick="joinRoomCheck()">→</button>
+      </div>
+      <div style="margin-top:10px;">
+        <input type="password" id="joinPassword" placeholder="Şifre (gerekiyorsa)"
+          style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 13px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;width:100%;outline:none;">
       </div>
       <div class="lobby-error" id="joinError"></div>
     </div>
@@ -1215,7 +1451,26 @@
       <div class="room-brand">SoLikez</div>
       <div class="room-code-badge" id="roomCodeDisplay" onclick="copyRoomCode()" title="Kodu kopyala">——</div>
       <div class="host-badge" id="hostBadge" style="display:none;">HOST</div>
+      <div class="host-badge" id="lockBadge" style="display:none;background:rgba(251,191,36,0.15);border-color:rgba(251,191,36,0.3);color:var(--warn);">🔒 Şifreli</div>
       <div class="participant-count" id="participantCount">👤 1</div>
+      <div class="quality-badge" id="qualityBadge" onclick="toggleQualityPopup()" title="Bağlantı kalitesi">
+        <div class="quality-bars">
+          <div class="quality-bar on" id="qb1" style="height:4px"></div>
+          <div class="quality-bar on" id="qb2" style="height:7px"></div>
+          <div class="quality-bar on" id="qb3" style="height:10px"></div>
+          <div class="quality-bar"   id="qb4" style="height:13px"></div>
+        </div>
+        <span id="qualityLabel">—</span>
+        <div class="quality-popup" id="qualityPopup">
+          <div class="qp-title">Bağlantı İstatistikleri</div>
+          <div class="qp-row"><span class="qp-label">Gecikme</span><span class="qp-val" id="qs-rtt">—</span></div>
+          <div class="qp-row"><span class="qp-label">Paket Kaybı</span><span class="qp-val" id="qs-loss">—</span></div>
+          <div class="qp-row"><span class="qp-label">Video Bitrate</span><span class="qp-val" id="qs-vbr">—</span></div>
+          <div class="qp-row"><span class="qp-label">Ses Bitrate</span><span class="qp-val" id="qs-abr">—</span></div>
+          <div class="qp-row"><span class="qp-label">Çözünürlük</span><span class="qp-val" id="qs-res">—</span></div>
+          <div class="qp-row"><span class="qp-label">FPS</span><span class="qp-val" id="qs-fps">—</span></div>
+        </div>
+      </div>
     </div>
     <div style="display:flex;gap:8px;align-items:center;">
       <div class="avatar" id="roomAvatar" style="width:30px;height:30px;font-size:11px;"></div>
@@ -1239,8 +1494,11 @@
     </div>
     <!-- active speaker hint -->
     <div class="speaker-hint" id="speakerHint"></div>
-    <div class="chat-sidebar">
-      <div class="chat-header">💬 Sohbet</div>
+    <div class="chat-sidebar" id="chatSidebar">
+      <div class="chat-header" style="justify-content:space-between;">
+        <span>💬 Sohbet</span>
+        <button onclick="toggleChat()" style="background:none;border:none;color:var(--text2);font-size:16px;cursor:pointer;line-height:1;" title="Kapat">✕</button>
+      </div>
       <div class="chat-messages" id="chatMessages"></div>
       <div class="chat-input-row">
         <input type="text" id="chatInput" placeholder="Mesaj yaz..." onkeydown="if(event.key==='Enter')sendChat()">
@@ -1272,8 +1530,20 @@
     <button class="ctrl-btn" id="devicesBtn" onclick="openDevicePicker('switch')">
       ⚙️ <span class="ctrl-label">Cihazlar</span>
     </button>
+    <button class="ctrl-btn" id="chatToggleBtn" onclick="toggleChat()">
+      💬 <span class="ctrl-label">Sohbet</span>
+    </button>
+    <button class="ctrl-btn" id="wbBtn" onclick="toggleWhiteboard()">
+      ✏️ <span class="ctrl-label">Tahta</span>
+    </button>
+    <button class="rec-btn" id="recBtn" onclick="toggleRecording()">
+      ⏺️ <span class="ctrl-label">Kaydet</span>
+    </button>
     <button class="host-panel-btn" id="hostPanelBtn" onclick="openHostPanel()" style="display:none;">
       👑 <span class="ctrl-label">Katılımcılar</span>
+    </button>
+    <button class="ctrl-btn" id="pollBtn" onclick="openPollModal()">
+      🗳️ <span class="ctrl-label">Anket</span>
     </button>
     <button class="ctrl-btn-leave" onclick="leaveRoom()">
       📵 <span class="ctrl-label">Ayrıl</span>
@@ -1281,14 +1551,83 @@
   </div>
 </div>
 
+<!-- ══════════════════ WHITEBOARD ══════════════════ -->
+<div class="whiteboard-overlay" id="whiteboardOverlay">
+  <div class="wb-topbar">
+    <div class="wb-title">✏️ Ortak Tahta</div>
+    <button class="wb-tool active" id="wbPen"    onclick="setWbTool('pen')"    title="Kalem">✏️</button>
+    <button class="wb-tool"        id="wbLine"   onclick="setWbTool('line')"   title="Çizgi">╱</button>
+    <button class="wb-tool"        id="wbRect"   onclick="setWbTool('rect')"   title="Dikdörtgen">▭</button>
+    <button class="wb-tool"        id="wbCircle" onclick="setWbTool('circle')" title="Daire">○</button>
+    <button class="wb-tool"        id="wbEraser" onclick="setWbTool('eraser')" title="Silgi">⬜</button>
+    <div class="wb-sep"></div>
+    <div id="wbColors" style="display:flex;gap:6px;align-items:center;">
+      <div class="wb-color active" style="background:#1a1a2e" data-color="#1a1a2e" onclick="setWbColor(this)"></div>
+      <div class="wb-color"        style="background:#e63946" data-color="#e63946" onclick="setWbColor(this)"></div>
+      <div class="wb-color"        style="background:#2196f3" data-color="#2196f3" onclick="setWbColor(this)"></div>
+      <div class="wb-color"        style="background:#4caf50" data-color="#4caf50" onclick="setWbColor(this)"></div>
+      <div class="wb-color"        style="background:#ff9800" data-color="#ff9800" onclick="setWbColor(this)"></div>
+      <div class="wb-color"        style="background:#9c27b0" data-color="#9c27b0" onclick="setWbColor(this)"></div>
+      <div class="wb-color"        style="background:#fff"    data-color="#ffffff" onclick="setWbColor(this)" style="border:1px solid #ccc"></div>
+    </div>
+    <div class="wb-sep"></div>
+    <input type="range" class="wb-size" id="wbSize" min="2" max="30" value="4" title="Kalınlık">
+    <div class="wb-sep"></div>
+    <button class="wb-tool" onclick="clearWhiteboard()" title="Temizle" style="font-size:13px;width:auto;padding:0 10px;">Temizle</button>
+    <button class="wb-tool" id="wbHostClear" onclick="hostClearWhiteboard()" style="font-size:13px;width:auto;padding:0 10px;display:none;">🗑️ Herkesi Sil</button>
+    <button class="wb-close" onclick="toggleWhiteboard()">✕ Kapat</button>
+  </div>
+  <div class="wb-canvas-wrap" id="wbWrap">
+    <canvas id="wbCanvas"></canvas>
+  </div>
+</div>
+
+<!-- ══════════════════ ANKET MODAL ══════════════════ -->
+<div class="modal-overlay" id="pollModal">
+  <div class="modal" style="width:420px;">
+    <div class="modal-title">🗳️ Anlık Anket <button onclick="closePollModal()" style="margin-left:auto;background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer;">×</button></div>
+    <!-- Host: anket oluştur -->
+    <div id="pollCreate" style="display:none;">
+      <div class="profile-field">
+        <label>SORU</label>
+        <input type="text" id="pollQuestion" placeholder="Soru yaz..." maxlength="120">
+      </div>
+      <div id="pollOptions">
+        <div class="profile-field"><label>SEÇENEK 1</label><input type="text" class="poll-opt" placeholder="Seçenek 1"></div>
+        <div class="profile-field"><label>SEÇENEK 2</label><input type="text" class="poll-opt" placeholder="Seçenek 2"></div>
+      </div>
+      <button onclick="addPollOption()" style="background:none;border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text2);font-size:13px;padding:6px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:14px;">+ Seçenek Ekle</button>
+      <button class="btn-profile-save" onclick="startPoll()">Anketi Başlat</button>
+    </div>
+    <!-- Herkes: mevcut anket -->
+    <div id="pollActive" style="display:none;">
+      <div id="pollQuestionText" style="font-size:15px;font-weight:500;color:var(--text);margin-bottom:16px;line-height:1.4;"></div>
+      <div id="pollOptionsList"></div>
+      <button id="pollEndBtn" onclick="endPoll()" style="display:none;margin-top:12px;background:rgba(255,79,106,0.1);border:1px solid rgba(255,79,106,0.25);border-radius:var(--radius-sm);color:var(--danger);font-size:13px;font-family:'DM Sans',sans-serif;padding:7px 16px;cursor:pointer;font-weight:500;">Anketi Bitir</button>
+    </div>
+    <!-- Sonuç yok -->
+    <div id="pollEmpty" style="text-align:center;padding:20px 0;font-size:13px;color:var(--text2);">Henüz aktif anket yok.</div>
+  </div>
+</div>
+
+<!-- ══════════════════ JOIN REQUEST TOAST (HOST GÖRÜR) ══════════════════ -->
+<div class="join-request-toast" id="joinRequestToast">
+  <div class="jrt-title">🔔 Katılım İsteği</div>
+  <div class="jrt-sub" id="joinRequestName">Kullanıcı odaya girmek istiyor.</div>
+  <div class="jrt-btns">
+    <button class="jrt-approve" onclick="approveJoin()">✓ Kabul Et</button>
+    <button class="jrt-deny"    onclick="denyJoin()">✕ Reddet</button>
+  </div>
+</div>
+
 <!-- ══════════════════ HOST PANEL MODAL ══════════════════ -->
 <div class="modal-overlay" id="hostPanelModal">
   <div class="modal">
-    <div class="modal-title">👑 Katılımcı Yönetimi</div>
+    <div class="modal-title">👑 Katılımcı Yönetimi <button onclick="closeHostPanel()" style="margin-left:auto;background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer;line-height:1;">×</button></div>
     <div id="hostParticipantList"></div>
   </div>
 </div>
-<div style="position:fixed;inset:0;display:none;" id="hostModalBg" onclick="closeHostPanel()"></div>
+<div style="position:fixed;inset:0;display:none;" id="hostModalBg" onclick="closeHostPanel();closePollModal();"></div>
 
 <!-- ══════════════════ SCREEN SHARE REQUEST (HOST GÖRÜR) ══════════════════ -->
 <div class="request-modal" id="screenRequestModal">
@@ -1541,10 +1880,31 @@ onAuthStateChanged(auth, async (user) => {
 function genCode() { return Math.random().toString(36).substring(2,8).toUpperCase(); }
 
 window.createRoom = async function() {
-  const code = genCode();
+  const customCode = document.getElementById('customRoomCode').value.trim().toUpperCase();
+  const password   = document.getElementById('roomPassword').value;
+  const errEl      = document.getElementById('createError');
+  errEl.textContent = '';
+
+  // Kod belirle
+  let code = customCode || genCode();
+
+  // Özel kod validasyon
+  if (customCode) {
+    if (customCode.length < 3) { errEl.textContent = 'Kod en az 3 karakter olmalı.'; return; }
+    // Dolu mu kontrol et
+    const existing = await get(ref(db, `rooms/${code}`));
+    if (existing.exists()) { errEl.textContent = `"${code}" kodu zaten kullanımda.`; return; }
+  }
+
+  // Şifre hash'le (basit — production'da bcrypt kullanılır)
+  const passwordHash = password ? btoa(unescape(encodeURIComponent(password))) : null;
+
   await set(ref(db, `rooms/${code}`), {
     host: currentUser.uid,
     created: Date.now(),
+    passwordHash,
+    hasPassword: !!password,
+    waitingRoom: true,
     participants: { [currentUser.uid]: { username: currentUser.username, joinedAt: Date.now() } }
   });
   enterRoom(code, true);
@@ -1553,9 +1913,26 @@ window.createRoom = async function() {
 window.joinRoom = async function() {
   const code = (devicePickerCode || document.getElementById('joinCodeInput').value.trim()).toUpperCase();
   document.getElementById('joinError').textContent = '';
-  if (code.length !== 6) { document.getElementById('joinError').textContent = 'Geçersiz kod.'; return; }
+  if (!code || code.length < 3) { document.getElementById('joinError').textContent = 'Geçersiz kod.'; return; }
   const snap = await get(ref(db, `rooms/${code}`));
   if (!snap.exists()) { document.getElementById('joinError').textContent = 'Oda bulunamadı.'; return; }
+
+  const roomData = snap.val();
+
+  // Bekleme odası aktifse → bekle
+  if (roomData.waitingRoom) {
+    await set(ref(db, `rooms/${code}/waiting/${currentUser.uid}`), {
+      username: currentUser.username, ts: Date.now(), status: 'pending'
+    });
+    // Bekleme ekranını göster
+    document.getElementById('waitingCode').textContent = code;
+    showScreen('waitingScreen');
+    // Host'un kararını dinle
+    listenWaitingDecision(code);
+    return;
+  }
+
+  // Bekleme odası yoksa direkt gir
   await update(ref(db, `rooms/${code}/participants/${currentUser.uid}`), {
     username: currentUser.username, joinedAt: Date.now()
   });
@@ -1574,6 +1951,10 @@ async function enterRoom(code, asHost) {
   document.getElementById('roomUsername').textContent      = currentUser.username;
   document.getElementById('hostBadge').style.display       = isHost ? '' : 'none';
   document.getElementById('hostPanelBtn').style.display    = isHost ? '' : 'none';
+
+  // Şifre rozeti
+  const roomSnap2 = await get(ref(db, `rooms/${code}/hasPassword`));
+  document.getElementById('lockBadge').style.display = roomSnap2.val() ? '' : 'none';
   showScreen('roomScreen');
 
   // Firebase cleanup on disconnect
@@ -1600,7 +1981,11 @@ async function enterRoom(code, asHost) {
   listenHandRaises(code);
   if (!isHost) listenScreenPermission(code);
   if (isHost)  listenScreenRequests(code);
+  if (isHost)  listenWaitingRoom(code);
+  listenPoll(code);
   startSpeakerDetection();
+  startQualityMonitor();
+  if (isHost) setTimeout(showHostWbControls, 100);
 
   // Host odayı silerse katılımcıları çıkar
   if (!isHost) {
@@ -2369,7 +2754,12 @@ window.leaveRoom = async function(forced = false) {
   // Stop all streams
   stopScreen();
   stopSpeakerDetection();
+  stopQualityMonitor();
+  stopRecording();
   unpin();
+  pendingJoinRequests = [];
+  currentJoinRequest = null;
+  document.getElementById('joinRequestToast').classList.remove('show');
   if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
 
   // Close all peer connections
@@ -2407,7 +2797,495 @@ window.leaveRoom = async function(forced = false) {
   showScreen('lobbyScreen');
 };
 
-// ── Room code copy ──
+// ══════════════════════════════════════════════════════
+//  BEKLEME ODASI
+// ══════════════════════════════════════════════════════
+let waitingCode = null;
+let waitingListener = null;
+let pendingJoinRequests = []; // { uid, username, ts }
+let currentJoinRequest = null;
+
+function listenWaitingDecision(code) {
+  waitingCode = code;
+  const decRef = ref(db, `rooms/${code}/waiting/${currentUser.uid}/status`);
+  waitingListener = onValue(decRef, async (snap) => {
+    const status = snap.val();
+    if (status === 'approved') {
+      off(decRef);
+      waitingListener = null;
+      // Odaya gir
+      await update(ref(db, `rooms/${code}/participants/${currentUser.uid}`), {
+        username: currentUser.username, joinedAt: Date.now()
+      });
+      await remove(ref(db, `rooms/${code}/waiting/${currentUser.uid}`));
+      enterRoom(code, false);
+      playNotifSound();
+    } else if (status === 'denied') {
+      off(decRef);
+      waitingListener = null;
+      await remove(ref(db, `rooms/${code}/waiting/${currentUser.uid}`));
+      showScreen('lobbyScreen');
+      showToast('İstek reddedildi.');
+    }
+  });
+}
+
+window.cancelWaiting = async function() {
+  if (waitingCode) {
+    await remove(ref(db, `rooms/${waitingCode}/waiting/${currentUser.uid}`)).catch(()=>{});
+    waitingCode = null;
+  }
+  showScreen('lobbyScreen');
+};
+
+// Host: bekleme listesini dinle
+function listenWaitingRoom(code) {
+  if (!isHost) return;
+  onChildAdded(ref(db, `rooms/${code}/waiting`), (snap) => {
+    const uid  = snap.key;
+    const data = snap.val();
+    if (data.status !== 'pending') return;
+    pendingJoinRequests.push({ uid, username: data.username });
+    if (!currentJoinRequest) showNextJoinRequest(code);
+  });
+}
+
+function showNextJoinRequest(code) {
+  if (!pendingJoinRequests.length) { currentJoinRequest = null; return; }
+  currentJoinRequest = pendingJoinRequests.shift();
+  const toast = document.getElementById('joinRequestToast');
+  document.getElementById('joinRequestName').textContent =
+    `"${currentJoinRequest.username}" odaya girmek istiyor.`;
+  toast.classList.add('show');
+  playNotifSound();
+  // 30sn sonra otomatik kapat
+  setTimeout(() => {
+    if (currentJoinRequest) denyJoin();
+  }, 30000);
+}
+
+window.approveJoin = async function() {
+  if (!currentJoinRequest) return;
+  await update(ref(db, `rooms/${currentRoom}/waiting/${currentJoinRequest.uid}`),
+    { status: 'approved' });
+  document.getElementById('joinRequestToast').classList.remove('show');
+  currentJoinRequest = null;
+  setTimeout(() => showNextJoinRequest(currentRoom), 500);
+};
+
+window.denyJoin = async function() {
+  if (!currentJoinRequest) return;
+  await update(ref(db, `rooms/${currentRoom}/waiting/${currentJoinRequest.uid}`),
+    { status: 'denied' });
+  document.getElementById('joinRequestToast').classList.remove('show');
+  currentJoinRequest = null;
+  setTimeout(() => showNextJoinRequest(currentRoom), 500);
+};
+
+function playNotifSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.setValueAtTime(1100, ctx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+    osc.start(); osc.stop(ctx.currentTime + 0.4);
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════════════════
+//  BAĞLANTI KALİTESİ
+// ══════════════════════════════════════════════════════
+let qualityInterval = null;
+let lastStats = {};
+
+function startQualityMonitor() {
+  if (qualityInterval) clearInterval(qualityInterval);
+  qualityInterval = setInterval(updateQuality, 3000);
+}
+
+function stopQualityMonitor() {
+  if (qualityInterval) { clearInterval(qualityInterval); qualityInterval = null; }
+  lastStats = {};
+}
+
+async function updateQuality() {
+  const pcs = Object.values(peerConnections);
+  if (!pcs.length) return;
+  const pc = pcs[0]; // ilk peer'ın stats'ını al
+  try {
+    const stats = await pc.getStats();
+    let rtt=null, loss=null, vbr=null, abr=null, res='—', fps=null;
+    let prevV = lastStats.videoBytes || 0, prevA = lastStats.audioBytes || 0;
+    let nowV=0, nowA=0;
+
+    stats.forEach(s => {
+      if (s.type === 'candidate-pair' && s.state === 'succeeded') {
+        rtt  = s.currentRoundTripTime != null ? Math.round(s.currentRoundTripTime*1000) : null;
+      }
+      if (s.type === 'inbound-rtp' && s.kind === 'video') {
+        loss = s.packetsLost != null && s.packetsReceived != null
+          ? ((s.packetsLost/(s.packetsLost+s.packetsReceived+1))*100).toFixed(1)
+          : null;
+        fps  = s.framesPerSecond != null ? Math.round(s.framesPerSecond) : null;
+        if (s.frameWidth && s.frameHeight) res = `${s.frameWidth}×${s.frameHeight}`;
+        nowV = s.bytesReceived || 0;
+      }
+      if (s.type === 'inbound-rtp' && s.kind === 'audio') {
+        nowA = s.bytesReceived || 0;
+      }
+    });
+
+    // Bitrate hesapla (bytes/3sn → kbps)
+    if (nowV > prevV) vbr = Math.round((nowV-prevV)*8/3/1000);
+    if (nowA > prevA) abr = Math.round((nowA-prevA)*8/3/1000);
+    lastStats = { videoBytes: nowV, audioBytes: nowA };
+
+    // UI güncelle
+    document.getElementById('qs-rtt').textContent  = rtt  != null ? `${rtt} ms`   : '—';
+    document.getElementById('qs-loss').textContent = loss != null ? `${loss}%`    : '—';
+    document.getElementById('qs-vbr').textContent  = vbr  != null ? `${vbr} kbps` : '—';
+    document.getElementById('qs-abr').textContent  = abr  != null ? `${abr} kbps` : '—';
+    document.getElementById('qs-res').textContent  = res;
+    document.getElementById('qs-fps').textContent  = fps  != null ? `${fps} fps`  : '—';
+
+    // Kalite skoru → bar renkleri
+    const score = rtt == null ? 0 :
+      rtt < 80  && (loss||0) < 1  ? 4 :
+      rtt < 150 && (loss||0) < 3  ? 3 :
+      rtt < 300 && (loss||0) < 10 ? 2 : 1;
+
+    const label = ['—','Kötü','Orta','İyi','Mükemmel'][score];
+    const cls   = score >= 3 ? 'on' : score === 2 ? 'warn' : 'bad';
+    document.getElementById('qualityLabel').textContent = label;
+    for (let i=1;i<=4;i++) {
+      const bar = document.getElementById(`qb${i}`);
+      bar.className = 'quality-bar' + (i<=score ? ' '+cls : '');
+    }
+  } catch(e) {}
+}
+
+window.toggleQualityPopup = function(e) {
+  const popup = document.getElementById('qualityPopup');
+  popup.classList.toggle('open');
+  // Dışarı tıklayınca kapat
+  if (popup.classList.contains('open')) {
+    setTimeout(() => document.addEventListener('click', closeQualityOnClick), 0);
+  }
+};
+function closeQualityOnClick(e) {
+  const popup = document.getElementById('qualityPopup');
+  if (!popup.contains(e.target)) {
+    popup.classList.remove('open');
+    document.removeEventListener('click', closeQualityOnClick);
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  ORTAK BEYAZ TAHTA
+// ══════════════════════════════════════════════════════
+let wbTool = 'pen', wbColor = '#1a1a2e', wbSize = 4;
+let wbDrawing = false, wbStartX = 0, wbStartY = 0;
+let wbSnapshot = null, wbOpen = false, wbCtx = null, wbCanvas = null;
+let wbThrottle = 0, wbSaveTimer = null;
+
+window.toggleWhiteboard = function() {
+  wbOpen = !wbOpen;
+  document.getElementById('whiteboardOverlay').classList.toggle('open', wbOpen);
+  const btn = document.getElementById('wbBtn');
+  btn.innerHTML = `✏️ <span class="ctrl-label">${wbOpen?'Kapat':'Tahta'}</span>`;
+  if (wbOpen && !wbCtx) initWhiteboard();
+};
+
+function initWhiteboard() {
+  wbCanvas = document.getElementById('wbCanvas');
+  const wrap = document.getElementById('wbWrap');
+  wbCanvas.width  = wrap.clientWidth;
+  wbCanvas.height = wrap.clientHeight;
+  wbCtx = wbCanvas.getContext('2d');
+  wbCtx.fillStyle = '#ffffff';
+  wbCtx.fillRect(0, 0, wbCanvas.width, wbCanvas.height);
+
+  wbCanvas.addEventListener('pointerdown', wbDown);
+  wbCanvas.addEventListener('pointermove', wbMove);
+  wbCanvas.addEventListener('pointerup',   wbUp);
+  wbCanvas.addEventListener('pointerleave', wbUp);
+
+  // Mevcut çizimi yükle
+  get(ref(db, `rooms/${currentRoom}/whiteboard/data`)).then(snap => {
+    if (!snap.exists()) return;
+    const img = new Image();
+    img.onload = () => wbCtx.drawImage(img, 0, 0);
+    img.src = snap.val();
+  });
+
+  // Diğerlerinin stroke'larını dinle
+  onChildAdded(ref(db, `rooms/${currentRoom}/whiteboard/strokes`), (snap) => {
+    const s = snap.val();
+    if (s.uid !== currentUser.uid) applyRemoteStroke(s);
+  });
+
+  document.getElementById('wbSize').addEventListener('input', e => { wbSize = +e.target.value; });
+  if (isHost) showHostWbControls();
+}
+
+function getWbPos(e) {
+  const r = wbCanvas.getBoundingClientRect();
+  return { x: (e.clientX??e.touches?.[0]?.clientX) - r.left, y: (e.clientY??e.touches?.[0]?.clientY) - r.top };
+}
+
+function wbDown(e) {
+  wbDrawing = true;
+  const {x,y} = getWbPos(e);
+  wbStartX = x; wbStartY = y;
+  if (wbTool !== 'pen' && wbTool !== 'eraser')
+    wbSnapshot = wbCtx.getImageData(0,0,wbCanvas.width,wbCanvas.height);
+  wbCtx.beginPath(); wbCtx.moveTo(x,y);
+  e.preventDefault();
+}
+
+function wbMove(e) {
+  if (!wbDrawing) return;
+  const {x,y} = getWbPos(e);
+  const ctx = wbCtx;
+  ctx.lineWidth = wbSize; ctx.lineCap = 'round'; ctx.strokeStyle = wbColor;
+  if (wbTool === 'pen') {
+    ctx.lineTo(x,y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x,y);
+    const now = Date.now();
+    if (now - wbThrottle > 50) {
+      wbThrottle = now;
+      push(ref(db,`rooms/${currentRoom}/whiteboard/strokes`), {
+        tool:'pen', x1:wbStartX, y1:wbStartY, x2:x, y2:y,
+        color:wbColor, size:wbSize, uid:currentUser.uid, ts:now
+      });
+    }
+    wbStartX=x; wbStartY=y;
+  } else if (wbTool === 'eraser') {
+    ctx.fillStyle='#fff'; ctx.fillRect(x-wbSize*2,y-wbSize*2,wbSize*4,wbSize*4);
+  } else {
+    ctx.putImageData(wbSnapshot,0,0); ctx.beginPath();
+    if (wbTool==='line')   { ctx.moveTo(wbStartX,wbStartY); ctx.lineTo(x,y); ctx.stroke(); }
+    if (wbTool==='rect')   { ctx.strokeRect(wbStartX,wbStartY,x-wbStartX,y-wbStartY); }
+    if (wbTool==='circle') {
+      const rx=(x-wbStartX)/2, ry=(y-wbStartY)/2;
+      ctx.ellipse(wbStartX+rx,wbStartY+ry,Math.abs(rx),Math.abs(ry),0,0,2*Math.PI); ctx.stroke();
+    }
+  }
+  e.preventDefault();
+}
+
+function wbUp(e) {
+  if (!wbDrawing) return;
+  wbDrawing = false;
+  clearTimeout(wbSaveTimer);
+  wbSaveTimer = setTimeout(() => {
+    if (!wbCanvas||!currentRoom) return;
+    set(ref(db,`rooms/${currentRoom}/whiteboard/data`), wbCanvas.toDataURL('image/jpeg',0.6));
+  }, 800);
+}
+
+function applyRemoteStroke(s) {
+  if (!wbCtx||s.tool!=='pen') return;
+  wbCtx.lineWidth=s.size; wbCtx.lineCap='round'; wbCtx.strokeStyle=s.color;
+  wbCtx.beginPath(); wbCtx.moveTo(s.x1,s.y1); wbCtx.lineTo(s.x2,s.y2); wbCtx.stroke();
+}
+
+window.clearWhiteboard = function() {
+  if (!wbCtx) return;
+  wbCtx.fillStyle='#fff'; wbCtx.fillRect(0,0,wbCanvas.width,wbCanvas.height);
+  remove(ref(db,`rooms/${currentRoom}/whiteboard`));
+  showToast('Tahta temizlendi.');
+};
+window.setWbTool = function(t) {
+  wbTool = t;
+  document.querySelectorAll('.wb-tool').forEach(b=>b.classList.remove('active'));
+  const id = 'wb'+t.charAt(0).toUpperCase()+t.slice(1);
+  document.getElementById(id)?.classList.add('active');
+};
+window.setWbColor = function(el) {
+  wbColor = el.dataset.color;
+  document.querySelectorAll('.wb-color').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  if (wbTool==='eraser') setWbTool('pen');
+};
+
+// ══════════════════════════════════════════════════════
+//  OTURUM KAYDI
+// ══════════════════════════════════════════════════════
+let mediaRecorder = null, recordedChunks = [], recInterval = null, recSeconds = 0;
+
+window.toggleRecording = async function() {
+  if (mediaRecorder?.state === 'recording') { stopRecording(); return; }
+  const tracks = [];
+  if (screenStream?.getVideoTracks().length) tracks.push(...screenStream.getVideoTracks());
+  else if (localStream?.getVideoTracks().length) tracks.push(...localStream.getVideoTracks());
+  if (localStream?.getAudioTracks().length) tracks.push(...localStream.getAudioTracks());
+  if (!tracks.length) { showToast('Kaydedilecek medya yok.'); return; }
+
+  const stream   = new MediaStream(tracks);
+  recordedChunks = [];
+  const mime = ['video/webm;codecs=vp9,opus','video/webm','video/mp4']
+    .find(t => MediaRecorder.isTypeSupported(t)) || 'video/webm';
+
+  mediaRecorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 2_500_000 });
+  mediaRecorder.ondataavailable = e => { if (e.data.size>0) recordedChunks.push(e.data); };
+  mediaRecorder.onstop = () => {
+    const blob = new Blob(recordedChunks, { type: mime });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = `solikez-${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.webm`;
+    a.click(); URL.revokeObjectURL(url);
+    recordedChunks = [];
+    showToast('Kayıt indirildi.');
+  };
+  mediaRecorder.start(1000);
+
+  recSeconds = 0;
+  const btn = document.getElementById('recBtn');
+  btn.classList.add('recording');
+  recInterval = setInterval(() => {
+    recSeconds++;
+    const m=String(Math.floor(recSeconds/60)).padStart(2,'0');
+    const s=String(recSeconds%60).padStart(2,'0');
+    btn.innerHTML = `🔴 <span class="ctrl-label">${m}:${s}</span>`;
+  }, 1000);
+  showToast('Kayıt başladı.');
+};
+
+function stopRecording() {
+  mediaRecorder?.stop(); mediaRecorder = null;
+  clearInterval(recInterval); recInterval = null;
+  const btn = document.getElementById('recBtn');
+  btn.classList.remove('recording');
+  btn.innerHTML = `⏺️ <span class="ctrl-label">Kaydet</span>`;
+}
+
+// ── Chat toggle ──
+let chatVisible = true;
+window.toggleChat = function() {
+  chatVisible = !chatVisible;
+  document.getElementById('chatSidebar').classList.toggle('hidden', !chatVisible);
+  const btn = document.getElementById('chatToggleBtn');
+  btn.classList.toggle('off', !chatVisible);
+};
+
+// ── Host: tüm tahta içeriğini sil ──
+window.hostClearWhiteboard = async function() {
+  if (!isHost) return;
+  await remove(ref(db, `rooms/${currentRoom}/whiteboard`));
+  if (wbCtx && wbCanvas) {
+    wbCtx.fillStyle = '#fff';
+    wbCtx.fillRect(0, 0, wbCanvas.width, wbCanvas.height);
+  }
+  showToast('Tahta tüm kullanıcılar için temizlendi.');
+};
+
+// ══════════════════════════════════════════════════════
+//  ANKET
+// ══════════════════════════════════════════════════════
+let myPollVote = null;
+
+window.openPollModal = async function() {
+  document.getElementById('pollModal').classList.add('open');
+  document.getElementById('hostModalBg').style.display = '';
+  await refreshPollUI();
+};
+
+window.closePollModal = function() {
+  document.getElementById('pollModal').classList.remove('open');
+  document.getElementById('hostModalBg').style.display = 'none';
+};
+
+async function refreshPollUI() {
+  const snap = await get(ref(db, `rooms/${currentRoom}/poll`));
+  const poll  = snap.val();
+  const create = document.getElementById('pollCreate');
+  const active = document.getElementById('pollActive');
+  const empty  = document.getElementById('pollEmpty');
+  if (!poll || poll.ended) {
+    create.style.display = isHost ? '' : 'none';
+    active.style.display = 'none';
+    empty.style.display  = isHost ? 'none' : '';
+    myPollVote = null;
+  } else {
+    create.style.display = 'none';
+    active.style.display = '';
+    empty.style.display  = 'none';
+    renderPollActive(poll);
+  }
+}
+
+function renderPollActive(poll) {
+  document.getElementById('pollQuestionText').textContent = poll.question;
+  document.getElementById('pollEndBtn').style.display = isHost ? '' : 'none';
+  const list = document.getElementById('pollOptionsList');
+  list.innerHTML = '';
+  const totalVotes = Object.values(poll.votes || {}).length;
+  poll.options.forEach((opt, i) => {
+    const votes = Object.values(poll.votes || {}).filter(v => v === i).length;
+    const pct   = totalVotes ? Math.round(votes/totalVotes*100) : 0;
+    const voted = poll.votes?.[currentUser.uid] === i;
+    const row = document.createElement('div');
+    row.className = 'poll-opt-row';
+    row.innerHTML = `
+      <div class="poll-opt-label">${opt}</div>
+      <div class="poll-opt-bar-wrap"><div class="poll-opt-bar" style="width:${pct}%"></div></div>
+      <div class="poll-opt-pct">${pct}%</div>
+      <button class="poll-vote-btn${voted?' voted':''}" onclick="castVote(${i})">${voted?'✓':'Seç'}</button>`;
+    list.appendChild(row);
+  });
+}
+
+window.addPollOption = function() {
+  const cont = document.getElementById('pollOptions');
+  const n = cont.querySelectorAll('.poll-opt').length + 1;
+  const div = document.createElement('div');
+  div.className = 'profile-field';
+  div.innerHTML = `<label>SEÇENEK ${n}</label><input type="text" class="poll-opt" placeholder="Seçenek ${n}">`;
+  cont.appendChild(div);
+};
+
+window.startPoll = async function() {
+  const q    = document.getElementById('pollQuestion').value.trim();
+  const opts = [...document.querySelectorAll('.poll-opt')].map(i=>i.value.trim()).filter(Boolean);
+  if (!q)          { showToast('Soru boş olamaz.'); return; }
+  if (opts.length < 2) { showToast('En az 2 seçenek gerekli.'); return; }
+  await set(ref(db, `rooms/${currentRoom}/poll`), {
+    question: q, options: opts, votes: {}, ended: false, ts: Date.now()
+  });
+  push(ref(db, `rooms/${currentRoom}/chat`), {
+    uid:'system', username:'Sistem',
+    text:`🗳️ Yeni anket başladı! Anketi görmek için 🗳️ Anket butonuna tıkla.`, ts: Date.now()
+  });
+  showToast('Anket başlatıldı!');
+  await refreshPollUI();
+};
+
+window.castVote = async function(i) {
+  await update(ref(db, `rooms/${currentRoom}/poll/votes`), { [currentUser.uid]: i });
+  await refreshPollUI();
+};
+
+window.endPoll = async function() {
+  await update(ref(db, `rooms/${currentRoom}/poll`), { ended: true });
+  showToast('Anket sonlandırıldı.');
+  await refreshPollUI();
+};
+
+function listenPoll(code) {
+  onValue(ref(db, `rooms/${code}/poll`), (snap) => {
+    const poll = snap.val();
+    if (document.getElementById('pollModal').classList.contains('open')) refreshPollUI();
+    if (poll && !poll.ended && poll.ts && (Date.now()-poll.ts) < 5000) {
+      showToast('🗳️ Yeni anket başladı!');
+      playNotifSound();
+    }
+  });
+}
+
 window.copyRoomCode = function() {
   navigator.clipboard.writeText(currentRoom)
     .then(() => showToast('Oda kodu kopyalandı: ' + currentRoom));
@@ -2588,11 +3466,19 @@ window.confirmDevice = async function() {
 
 // joinRoom with code check then device picker
 window.joinRoomCheck = async function() {
-  const code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
-  document.getElementById('joinError').textContent = '';
-  if (code.length !== 6) { document.getElementById('joinError').textContent = 'Geçersiz kod.'; return; }
+  const code  = document.getElementById('joinCodeInput').value.trim().toUpperCase();
+  const errEl = document.getElementById('joinError');
+  errEl.textContent = '';
+  if (!code || code.length < 3) { errEl.textContent = 'Geçersiz kod.'; return; }
   const snap = await get(ref(db, `rooms/${code}`));
-  if (!snap.exists()) { document.getElementById('joinError').textContent = 'Oda bulunamadı.'; return; }
+  if (!snap.exists()) { errEl.textContent = 'Oda bulunamadı.'; return; }
+  const roomData = snap.val();
+  if (roomData.hasPassword) {
+    const pass = document.getElementById('joinPassword').value;
+    if (!pass) { errEl.textContent = '🔒 Bu oda şifreli — şifreyi girin.'; return; }
+    const hash = btoa(unescape(encodeURIComponent(pass)));
+    if (hash !== roomData.passwordHash) { errEl.textContent = 'Şifre yanlış.'; return; }
+  }
   openDevicePicker('join', code);
 };
 
