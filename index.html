@@ -2981,8 +2981,12 @@ window.toggleWhiteboard = function() {
     toolbar.style.display = 'flex';
     btn.innerHTML = `✏️ <span class="ctrl-label">Kapat</span>`;
     btn.classList.add('active-screen');
-    if (!wbCtx) initWhiteboard();
-    else resizeWbCanvas();
+    if (!wbCtx) {
+      // Canvas görünür olduktan sonra init et
+      requestAnimationFrame(() => initWhiteboard());
+    } else {
+      requestAnimationFrame(() => fitWbCanvas());
+    }
   } else {
     // Kapat
     area.classList.remove('spotlight-mode');
@@ -3001,34 +3005,27 @@ window.toggleWhiteboard = function() {
   }
 };
 
-function resizeWbCanvas() {
-  if (!wbCanvas) return;
-  const wrap = document.getElementById('wbCanvasWrap');
-  const imgData = wbCtx.getImageData(0, 0, wbCanvas.width, wbCanvas.height);
-  wbCanvas.width  = wrap.clientWidth  || 800;
-  wbCanvas.height = wrap.clientHeight || 600;
-  wbCtx.putImageData(imgData, 0, 0);
-}
 
 function initWhiteboard() {
   wbCanvas = document.getElementById('wbCanvas');
-  const wrap = document.getElementById('wbCanvasWrap');
-  wbCanvas.width  = wrap.clientWidth  || 800;
-  wbCanvas.height = wrap.clientHeight || 600;
   wbCtx = wbCanvas.getContext('2d');
-  wbCtx.fillStyle = '#ffffff';
-  wbCtx.fillRect(0, 0, wbCanvas.width, wbCanvas.height);
+
+  // Canvas boyutunu DOM boyutuna eşitle
+  fitWbCanvas();
 
   wbCanvas.addEventListener('pointerdown', wbDown);
   wbCanvas.addEventListener('pointermove', wbMove);
   wbCanvas.addEventListener('pointerup',   wbUp);
   wbCanvas.addEventListener('pointerleave', wbUp);
 
+  // Pencere boyutu değişince canvas'ı yeniden ayarla
+  window.addEventListener('resize', fitWbCanvas);
+
   // Mevcut çizimi yükle
   get(ref(db, `rooms/${currentRoom}/whiteboard/data`)).then(snap => {
     if (!snap.exists()) return;
     const img = new Image();
-    img.onload = () => wbCtx.drawImage(img, 0, 0);
+    img.onload = () => wbCtx.drawImage(img, 0, 0, wbCanvas.width, wbCanvas.height);
     img.src = snap.val();
   });
 
@@ -3042,9 +3039,30 @@ function initWhiteboard() {
   if (isHost) showHostWbControls();
 }
 
+function fitWbCanvas() {
+  if (!wbCanvas) return;
+  // Mevcut içeriği kaydet
+  let imgData = null;
+  if (wbCtx && wbCanvas.width > 0 && wbCanvas.height > 0) {
+    imgData = wbCtx.getImageData(0, 0, wbCanvas.width, wbCanvas.height);
+  }
+  // CSS boyutunu oku (gerçek görsel boyut)
+  const rect = wbCanvas.getBoundingClientRect();
+  wbCanvas.width  = rect.width  || wbCanvas.offsetWidth  || 800;
+  wbCanvas.height = rect.height || wbCanvas.offsetHeight || 600;
+  // Beyaz dolgu
+  wbCtx.fillStyle = '#ffffff';
+  wbCtx.fillRect(0, 0, wbCanvas.width, wbCanvas.height);
+  // Önceki içeriği geri koy
+  if (imgData) wbCtx.putImageData(imgData, 0, 0);
+}
+
 function getWbPos(e) {
   const r = wbCanvas.getBoundingClientRect();
-  return { x: (e.clientX??e.touches?.[0]?.clientX) - r.left, y: (e.clientY??e.touches?.[0]?.clientY) - r.top };
+  const cx = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
+  const cy = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
+  // Canvas attribute boyutu ile görsel boyut her zaman eşit (fitWbCanvas sayesinde)
+  return { x: cx - r.left, y: cy - r.top };
 }
 
 function wbDown(e) {
