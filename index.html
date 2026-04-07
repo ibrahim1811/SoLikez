@@ -1134,7 +1134,7 @@
     display: flex; align-items: center; gap: 5px;
   }
 
-  /* ══ BEYAZ TAHTA ══ */
+  /* ══ BEYAZ TAHTA araç çubuğu ══ */
   /* chat sidebar hidden state */
   .chat-sidebar { transition: width 0.25s ease, opacity 0.25s; }
   .chat-sidebar.hidden { width: 0 !important; opacity: 0; pointer-events: none; overflow: hidden; padding: 0; }
@@ -1150,54 +1150,23 @@
   .poll-vote-btn:hover { border-color:var(--accent); color:var(--accent2); }
   .poll-vote-btn.voted { background:rgba(108,99,255,0.15); border-color:var(--accent); color:var(--accent2); }
 
-  .whiteboard-overlay {
-    position: fixed; inset: 0; z-index: 3000;
-    background: var(--bg); display: none;
-    flex-direction: column;
-  }
-  .whiteboard-overlay.open { display: flex; }
-  .wb-topbar {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 16px;
-    background: var(--bg2); border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-  .wb-title {
-    font-family: 'Syne', sans-serif; font-weight: 700;
-    font-size: 15px; color: var(--text); margin-right: 8px;
-  }
   .wb-tool {
-    width: 34px; height: 34px; border-radius: 8px;
+    width: 30px; height: 30px; border-radius: 7px;
     border: 1px solid var(--border); background: var(--bg3);
-    color: var(--text); font-size: 16px; cursor: pointer;
+    color: var(--text); font-size: 14px; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    transition: all 0.15s;
+    transition: all 0.15s; flex-shrink: 0;
   }
   .wb-tool:hover { border-color: var(--border2); }
   .wb-tool.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .wb-sep { width: 1px; height: 24px; background: var(--border); margin: 0 4px; }
+  .wb-sep { width: 1px; height: 20px; background: var(--border); margin: 0 2px; flex-shrink:0; }
   .wb-color {
-    width: 28px; height: 28px; border-radius: 50%;
+    width: 22px; height: 22px; border-radius: 50%;
     border: 2px solid transparent; cursor: pointer;
-    transition: transform 0.15s;
+    transition: transform 0.15s; flex-shrink:0;
   }
-  .wb-color:hover { transform: scale(1.15); }
-  .wb-color.active { border-color: #fff; }
-  .wb-size {
-    width: 70px; accent-color: var(--accent);
-  }
-  .wb-close {
-    margin-left: auto; background: rgba(255,79,106,0.12);
-    border: 1px solid rgba(255,79,106,0.3); border-radius: 8px;
-    color: var(--danger); font-size: 13px; font-weight: 600;
-    padding: 6px 14px; cursor: pointer; font-family: 'DM Sans', sans-serif;
-    transition: all 0.2s;
-  }
-  .wb-close:hover { background: rgba(255,79,106,0.22); }
-  .wb-canvas-wrap {
-    flex: 1; overflow: hidden; position: relative; background: #fff;
-  }
-  #wbCanvas { display: block; cursor: crosshair; touch-action: none; }
+  .wb-color:hover { transform: scale(1.2); }
+  .wb-color.active { border-color: var(--accent2); box-shadow: 0 0 0 2px var(--bg2); }
 
   /* ══ KAYIT ══ */
   .rec-btn {
@@ -1486,7 +1455,11 @@
       <!-- spotlight main panel (hidden by default) -->
       <div class="spotlight-main" id="spotlightMain" style="display:none;">
         <div id="spotlightContent"></div>
-        <div class="spotlight-overlay">
+        <!-- whiteboard canvas (tahta modunda gösterilir) -->
+        <div id="wbCanvasWrap" style="display:none;width:100%;height:100%;position:absolute;inset:0;">
+          <canvas id="wbCanvas" style="width:100%;height:100%;cursor:crosshair;touch-action:none;background:#fff;"></canvas>
+        </div>
+        <div class="spotlight-overlay" id="spotlightOverlay">
           <div class="spotlight-name" id="spotlightName"></div>
           <button class="spotlight-unpin" onclick="unpin()">✕ Sabitlemeyi Kaldır</button>
         </div>
@@ -1551,35 +1524,31 @@
   </div>
 </div>
 
-<!-- ══════════════════ WHITEBOARD ══════════════════ -->
-<div class="whiteboard-overlay" id="whiteboardOverlay">
-  <div class="wb-topbar">
-    <div class="wb-title">✏️ Ortak Tahta</div>
-    <button class="wb-tool active" id="wbPen"    onclick="setWbTool('pen')"    title="Kalem">✏️</button>
-    <button class="wb-tool"        id="wbLine"   onclick="setWbTool('line')"   title="Çizgi">╱</button>
-    <button class="wb-tool"        id="wbRect"   onclick="setWbTool('rect')"   title="Dikdörtgen">▭</button>
-    <button class="wb-tool"        id="wbCircle" onclick="setWbTool('circle')" title="Daire">○</button>
-    <button class="wb-tool"        id="wbEraser" onclick="setWbTool('eraser')" title="Silgi">⬜</button>
-    <div class="wb-sep"></div>
-    <div id="wbColors" style="display:flex;gap:6px;align-items:center;">
-      <div class="wb-color active" style="background:#1a1a2e" data-color="#1a1a2e" onclick="setWbColor(this)"></div>
-      <div class="wb-color"        style="background:#e63946" data-color="#e63946" onclick="setWbColor(this)"></div>
-      <div class="wb-color"        style="background:#2196f3" data-color="#2196f3" onclick="setWbColor(this)"></div>
-      <div class="wb-color"        style="background:#4caf50" data-color="#4caf50" onclick="setWbColor(this)"></div>
-      <div class="wb-color"        style="background:#ff9800" data-color="#ff9800" onclick="setWbColor(this)"></div>
-      <div class="wb-color"        style="background:#9c27b0" data-color="#9c27b0" onclick="setWbColor(this)"></div>
-      <div class="wb-color"        style="background:#fff"    data-color="#ffffff" onclick="setWbColor(this)" style="border:1px solid #ccc"></div>
-    </div>
-    <div class="wb-sep"></div>
-    <input type="range" class="wb-size" id="wbSize" min="2" max="30" value="4" title="Kalınlık">
-    <div class="wb-sep"></div>
-    <button class="wb-tool" onclick="clearWhiteboard()" title="Temizle" style="font-size:13px;width:auto;padding:0 10px;">Temizle</button>
-    <button class="wb-tool" id="wbHostClear" onclick="hostClearWhiteboard()" style="font-size:13px;width:auto;padding:0 10px;display:none;">🗑️ Herkesi Sil</button>
-    <button class="wb-close" onclick="toggleWhiteboard()">✕ Kapat</button>
+<!-- ══════════════════ WHITEBOARD TOOLBAR (room içinde gösterilir) ══════════════════ -->
+<div id="wbToolbar" style="display:none;position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:200;
+  background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:8px 12px;
+  display:none;align-items:center;gap:8px;flex-wrap:wrap;box-shadow:0 4px 24px rgba(0,0,0,0.4);">
+  <span style="font-size:13px;font-weight:600;color:var(--text2);margin-right:4px;">✏️</span>
+  <button class="wb-tool active" id="wbPen"    onclick="setWbTool('pen')"    title="Kalem">✏️</button>
+  <button class="wb-tool"        id="wbLine"   onclick="setWbTool('line')"   title="Çizgi">╱</button>
+  <button class="wb-tool"        id="wbRect"   onclick="setWbTool('rect')"   title="Dikdörtgen">▭</button>
+  <button class="wb-tool"        id="wbCircle" onclick="setWbTool('circle')" title="Daire">○</button>
+  <button class="wb-tool"        id="wbEraser" onclick="setWbTool('eraser')" title="Silgi">⬜</button>
+  <div class="wb-sep"></div>
+  <div style="display:flex;gap:6px;align-items:center;">
+    <div class="wb-color active" style="background:#1a1a2e" data-color="#1a1a2e" onclick="setWbColor(this)"></div>
+    <div class="wb-color"        style="background:#e63946" data-color="#e63946" onclick="setWbColor(this)"></div>
+    <div class="wb-color"        style="background:#2196f3" data-color="#2196f3" onclick="setWbColor(this)"></div>
+    <div class="wb-color"        style="background:#4caf50" data-color="#4caf50" onclick="setWbColor(this)"></div>
+    <div class="wb-color"        style="background:#ff9800" data-color="#ff9800" onclick="setWbColor(this)"></div>
+    <div class="wb-color"        style="background:#9c27b0" data-color="#9c27b0" onclick="setWbColor(this)"></div>
+    <div class="wb-color"        style="background:#ffffff" data-color="#ffffff" onclick="setWbColor(this)"></div>
   </div>
-  <div class="wb-canvas-wrap" id="wbWrap">
-    <canvas id="wbCanvas"></canvas>
-  </div>
+  <div class="wb-sep"></div>
+  <input type="range" class="wb-size" id="wbSize" min="2" max="30" value="4" title="Kalınlık" style="width:70px;">
+  <div class="wb-sep"></div>
+  <button class="wb-tool" onclick="clearWhiteboard()" style="font-size:11px;width:auto;padding:0 8px;">Temizle</button>
+  <button class="wb-tool" id="wbHostClear" onclick="hostClearWhiteboard()" style="font-size:11px;width:auto;padding:0 8px;display:none;">🗑️ Herkesi Sil</button>
 </div>
 
 <!-- ══════════════════ ANKET MODAL ══════════════════ -->
@@ -2994,17 +2963,58 @@ let wbThrottle = 0, wbSaveTimer = null;
 
 window.toggleWhiteboard = function() {
   wbOpen = !wbOpen;
-  document.getElementById('whiteboardOverlay').classList.toggle('open', wbOpen);
-  const btn = document.getElementById('wbBtn');
-  btn.innerHTML = `✏️ <span class="ctrl-label">${wbOpen?'Kapat':'Tahta'}</span>`;
-  if (wbOpen && !wbCtx) initWhiteboard();
+  const area     = document.getElementById('videoArea');
+  const main     = document.getElementById('spotlightMain');
+  const content  = document.getElementById('spotlightContent');
+  const wbWrap   = document.getElementById('wbCanvasWrap');
+  const overlay  = document.getElementById('spotlightOverlay');
+  const toolbar  = document.getElementById('wbToolbar');
+  const btn      = document.getElementById('wbBtn');
+
+  if (wbOpen) {
+    // Spotlight modu aç, tahta göster
+    area.classList.add('spotlight-mode');
+    main.style.display = '';
+    content.style.display = 'none';
+    wbWrap.style.display  = '';
+    overlay.style.display = 'none';
+    toolbar.style.display = 'flex';
+    btn.innerHTML = `✏️ <span class="ctrl-label">Kapat</span>`;
+    btn.classList.add('active-screen');
+    if (!wbCtx) initWhiteboard();
+    else resizeWbCanvas();
+  } else {
+    // Kapat
+    area.classList.remove('spotlight-mode');
+    main.style.display = 'none';
+    wbWrap.style.display = 'none';
+    toolbar.style.display = 'none';
+    btn.innerHTML = `✏️ <span class="ctrl-label">Tahta</span>`;
+    btn.classList.remove('active-screen');
+    // Eğer bir pin varsa onu geri getir
+    if (pinnedUid) {
+      area.classList.add('spotlight-mode');
+      main.style.display = '';
+      content.style.display = '';
+      overlay.style.display = '';
+    }
+  }
 };
+
+function resizeWbCanvas() {
+  if (!wbCanvas) return;
+  const wrap = document.getElementById('wbCanvasWrap');
+  const imgData = wbCtx.getImageData(0, 0, wbCanvas.width, wbCanvas.height);
+  wbCanvas.width  = wrap.clientWidth  || 800;
+  wbCanvas.height = wrap.clientHeight || 600;
+  wbCtx.putImageData(imgData, 0, 0);
+}
 
 function initWhiteboard() {
   wbCanvas = document.getElementById('wbCanvas');
-  const wrap = document.getElementById('wbWrap');
-  wbCanvas.width  = wrap.clientWidth;
-  wbCanvas.height = wrap.clientHeight;
+  const wrap = document.getElementById('wbCanvasWrap');
+  wbCanvas.width  = wrap.clientWidth  || 800;
+  wbCanvas.height = wrap.clientHeight || 600;
   wbCtx = wbCanvas.getContext('2d');
   wbCtx.fillStyle = '#ffffff';
   wbCtx.fillRect(0, 0, wbCanvas.width, wbCanvas.height);
