@@ -1896,10 +1896,16 @@ function buildPeer(code, remoteUid) {
   peerStates[remoteUid] = { pc, iceBuf: [], hasRemote: false };
   peerConnections[remoteUid] = pc;
 
-  // Local track'leri ekle
+  // Local track'leri ekle — ekran paylaşımı aktifse video track olarak screenStream kullan
   if (localStream) {
-    localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
-    console.log(`[RTC] ${localStream.getTracks().length} track eklendi (${localStream.getTracks().map(t=>t.kind).join(',')})`);
+    if (screenOn && screenStream) {
+      localStream.getAudioTracks().forEach(t => pc.addTrack(t, localStream));
+      screenStream.getVideoTracks().forEach(t => pc.addTrack(t, screenStream));
+      console.log(`[RTC] tracks eklendi (audio:${localStream.getAudioTracks().length}, screen-video:${screenStream.getVideoTracks().length})`);
+    } else {
+      localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+      console.log(`[RTC] ${localStream.getTracks().length} track eklendi (${localStream.getTracks().map(t=>t.kind).join(',')})`);
+    }
   } else {
     console.warn('[RTC] localStream YOK — track eklenemedi!');
   }
@@ -2062,11 +2068,32 @@ async function startScreen() {
     screenStream.getVideoTracks()[0].onended = () => stopScreen();
 
     // Replace video track in all peer connections
+    // Sender araması: track null (kamera kapalı) veya video türünde olabilir
     const screenTrack = screenStream.getVideoTracks()[0];
     for (const pc of Object.values(peerConnections)) {
-      const sender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
-      if (sender) sender.replaceTrack(screenTrack);
+      const sender = pc.getSenders().find(s =>
+        s.track === null || (s.track && s.track.kind === 'video')
+      );
+      if (sender) {
+        sender.replaceTrack(screenTrack).catch(()=>{});
+      } else {
+        pc.addTrack(screenTrack, screenStream);
+      }
     }
+
+    // Kendi tile'ını ekran stream'iyle güncelle
+    const localTile = document.getElementById(`tile-${currentUser.uid}`);
+    if (localTile) {
+      localTile.querySelectorAll('.tile-avatar').forEach(a => a.remove());
+      let v = localTile.querySelector('video');
+      if (!v) {
+        v = document.createElement('video');
+        v.autoplay = true; v.muted = true; v.playsInline = true;
+        localTile.prepend(v);
+      }
+      v.srcObject = screenStream;
+    }
+
     showToast('Ekran paylaşımı başladı.');
   } catch(e) { showToast('Ekran paylaşımı iptal edildi.'); }
 }
@@ -2078,16 +2105,22 @@ async function stopScreen() {
   btn.classList.remove('active-screen');
   btn.innerHTML = `🖥️ <span class="ctrl-label">Ekran</span>`;
 
-  // Restore camera track in all peer connections
-  if (localStream) {
-    const camTrack = localStream.getVideoTracks()[0];
-    if (camTrack) {
-      for (const pc of Object.values(peerConnections)) {
-        const sender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
-        if (sender) sender.replaceTrack(camTrack);
-      }
+  // Restore camera track — kamera açıksa camera track'i geri koy, kapalıysa null gönder
+  for (const pc of Object.values(peerConnections)) {
+    const sender = pc.getSenders().find(s =>
+      s.track === null || (s.track && s.track.kind === 'video')
+    );
+    if (!sender) continue;
+    if (camOn && localStream) {
+      const camTrack = localStream.getVideoTracks()[0];
+      sender.replaceTrack(camTrack || null).catch(()=>{});
+    } else {
+      sender.replaceTrack(null).catch(()=>{});
     }
   }
+
+  // Kendi tile'ını kameraya geri döndür
+  renderMyTile();
 }
 
 // Host: ekran istek dinleyici
@@ -2131,6 +2164,8 @@ function listenScreenPermission(code) {
     if (!snap.exists()) return;
     const perm = snap.val();
     if (perm.uid !== currentUser.uid) return;
+    // Eski izin verisini hemen temizle (tekrar tetiklenmemesi için)
+    remove(ref(db, `rooms/${code}/screenPermission`)).catch(()=>{});
     if (perm.allowed) { showToast('Ekran paylaşımı onaylandı!'); startScreen(); }
     else showToast('Ekran paylaşımı reddedildi.');
   });
