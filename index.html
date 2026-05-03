@@ -1811,18 +1811,28 @@ function listenSignals(code) {
       if (processedOffers.has(key)) return;
       processedOffers.add(key);
 
-      // Glare: ikimiz de offer attıysak küçük UID kazanır
-      // Küçük UID = offer atanı yoksay, kendi offer'ımızı sürdür
-      // Büyük UID = kendi offer'ımızı iptal et, karşının offer'ını kabul et
+      // Eğer peer zaten bağlıysa bu bir renegotiation offer'ıdır (replaceTrack sonrası)
       const ps = peerStates[fromUid];
+      if (ps?.pc && ps.pc.connectionState === 'connected' && ps.pc.signalingState === 'stable') {
+        console.log(`[RTC] renegotiation offer ← ${fromUid.slice(0,6)}`);
+        try {
+          await ps.pc.setRemoteDescription({ type: 'offer', sdp: data.sdp });
+          const ans = await ps.pc.createAnswer();
+          await ps.pc.setLocalDescription(ans);
+          await set(ref(db, `rooms/${code}/rtc/${fromUid}/${currentUser.uid}/answer`), {
+            sdp: ans.sdp, ts: Date.now()
+          });
+          console.log(`[RTC] renegotiation answer → ${fromUid.slice(0,6)}`);
+        } catch(e) { console.error('[RTC] renegotiation handleOffer:', e); }
+        return;
+      }
+
+      // Glare: ikimiz de offer attıysak küçük UID kazanır
       if (ps?.pc?.signalingState === 'have-local-offer') {
         if (currentUser.uid < fromUid) {
-          // Biz küçük UID — kazandık, karşının offer'ını yoksay
-          // Karşı taraf bizim answer'ımızı bekleyecek
           console.log(`[RTC] Glare: biz kazandık (${currentUser.uid.slice(0,4)} < ${fromUid.slice(0,4)})`);
           return;
         }
-        // Biz büyük UID — kaybettik, PC'yi sıfırla
         console.log(`[RTC] Glare: geri çekiliyoruz`);
         ps.pc.close();
         delete peerStates[fromUid];
@@ -1844,21 +1854,24 @@ function listenSignals(code) {
       } catch(e) { console.error('[RTC] handleOffer:', e); }
     });
 
-    // ANSWER — onValue ile dinle
+    // ANSWER — onValue ile dinle (initial + renegotiation)
     onValue(ref(db, `rooms/${code}/rtc/${currentUser.uid}/${fromUid}/answer`), async (snap) => {
       if (!snap.exists()) return;
       const data = snap.val();
       if (!data?.sdp) return;
       const ps = peerStates[fromUid];
       if (!ps?.pc) return;
-      if (ps.hasRemote) return;
+      // Sadece have-local-offer durumunda işle (initial veya renegotiation)
       if (ps.pc.signalingState !== 'have-local-offer') return;
       try {
         await ps.pc.setRemoteDescription({ type: 'answer', sdp: data.sdp });
-        ps.hasRemote = true;
-        console.log(`[RTC] answer set ← ${fromUid.slice(0,6)}, sigState=${ps.pc.signalingState}, iceState=${ps.pc.iceConnectionState}, buf=${ps.iceBuf.length}`);
-        await flushIce(fromUid);
-        console.log(`[RTC] flushIce done, connState=${ps.pc.connectionState}`);
+        if (!ps.hasRemote) {
+          ps.hasRemote = true;
+          console.log(`[RTC] answer set ← ${fromUid.slice(0,6)}, buf=${ps.iceBuf.length}`);
+          await flushIce(fromUid);
+        } else {
+          console.log(`[RTC] renegotiation answer set ← ${fromUid.slice(0,6)}`);
+        }
       } catch(e) { console.error('[RTC] setAnswer:', e); }
     });
 
@@ -1920,11 +1933,13 @@ function buildPeer(code, remoteUid) {
     push(ref(db, `rooms/${code}/rtc/${remoteUid}/${currentUser.uid}/ice`), candidate.toJSON());
   };
 
-  // Remote track → tile
+  // Remote track → tile (duplicate kontrolü ile)
   const remoteStream = new MediaStream();
-  pc.ontrack = ({ track, streams }) => {
+  pc.ontrack = ({ track }) => {
     console.log(`[RTC] ontrack ← ${remoteUid.slice(0,6)} ${track.kind} readyState=${track.readyState}`);
-    remoteStream.addTrack(track);
+    if (!remoteStream.getTrackById(track.id)) {
+      remoteStream.addTrack(track);
+    }
     const info = knownParticipants[remoteUid];
     getOrCreateRemoteTile(remoteUid, info?.username || remoteUid.slice(0,6));
     attachRemoteStream(remoteUid, remoteStream);
@@ -2048,6 +2063,22 @@ window.toggleCam = async function() {
 // ══════════════════════════════════════════════════════
 //  SCREEN SHARE
 // ══════════════════════════════════════════════════════
+
+// replaceTrack sonrası tüm bağlı peer'lara yeni offer göndererek SDP renegotiationı tetikler
+async function sendRenegotiation() {
+  for (const [remoteUid, pc] of Object.entries(peerConnections)) {
+    if (pc.connectionState !== 'connected') continue;
+    try {
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      await set(ref(db, `rooms/${currentRoom}/rtc/${remoteUid}/${currentUser.uid}/offer`), {
+        sdp: offer.sdp, ts: Date.now()
+      });
+      console.log(`[RTC] renegotiation offer → ${remoteUid.slice(0,6)}`);
+    } catch(e) { console.error('[RTC] sendRenegotiation:', e); }
+  }
+}
+
 window.requestScreen = async function() {
   if (screenOn) { stopScreen(); return; }
   if (isHost) { startScreen(); return; }
@@ -2060,26 +2091,28 @@ window.requestScreen = async function() {
 
 async function startScreen() {
   try {
-    screenStream = await navigator.mediaDevices.getDisplayMedia({ video:true, audio:false });
+    screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
     screenOn = true;
     const btn = document.getElementById('screenBtn');
     btn.classList.add('active-screen');
     btn.innerHTML = `🖥️ <span class="ctrl-label">Durdur</span>`;
     screenStream.getVideoTracks()[0].onended = () => stopScreen();
 
-    // Replace video track in all peer connections
-    // Sender araması: track null (kamera kapalı) veya video türünde olabilir
+    // Mevcut peer bağlantılarında video track'i ekran track'iyle değiştir
     const screenTrack = screenStream.getVideoTracks()[0];
     for (const pc of Object.values(peerConnections)) {
       const sender = pc.getSenders().find(s =>
         s.track === null || (s.track && s.track.kind === 'video')
       );
       if (sender) {
-        sender.replaceTrack(screenTrack).catch(()=>{});
+        await sender.replaceTrack(screenTrack);
       } else {
         pc.addTrack(screenTrack, screenStream);
       }
     }
+
+    // replaceTrack tek başına karşıya ulaşmıyor — SDP renegotiation gerekli
+    await sendRenegotiation();
 
     // Kendi tile'ını ekran stream'iyle güncelle
     const localTile = document.getElementById(`tile-${currentUser.uid}`);
@@ -2095,7 +2128,10 @@ async function startScreen() {
     }
 
     showToast('Ekran paylaşımı başladı.');
-  } catch(e) { showToast('Ekran paylaşımı iptal edildi.'); }
+  } catch(e) {
+    screenOn = false;
+    showToast('Ekran paylaşımı iptal edildi.');
+  }
 }
 
 async function stopScreen() {
@@ -2105,7 +2141,7 @@ async function stopScreen() {
   btn.classList.remove('active-screen');
   btn.innerHTML = `🖥️ <span class="ctrl-label">Ekran</span>`;
 
-  // Restore camera track — kamera açıksa camera track'i geri koy, kapalıysa null gönder
+  // Kamera track'ini geri yükle (kapalıysa null gönder)
   for (const pc of Object.values(peerConnections)) {
     const sender = pc.getSenders().find(s =>
       s.track === null || (s.track && s.track.kind === 'video')
@@ -2113,11 +2149,14 @@ async function stopScreen() {
     if (!sender) continue;
     if (camOn && localStream) {
       const camTrack = localStream.getVideoTracks()[0];
-      sender.replaceTrack(camTrack || null).catch(()=>{});
+      await sender.replaceTrack(camTrack || null).catch(() => {});
     } else {
-      sender.replaceTrack(null).catch(()=>{});
+      await sender.replaceTrack(null).catch(() => {});
     }
   }
+
+  // replaceTrack'ten sonra renegotiation ile karşıya bildir
+  await sendRenegotiation();
 
   // Kendi tile'ını kameraya geri döndür
   renderMyTile();
