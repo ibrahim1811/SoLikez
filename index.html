@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SoLikez</title>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9602322866141924" crossorigin="anonymous"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -805,6 +806,76 @@
   }
   .poll-vote-btn:hover { border-color:var(--accent); color:var(--accent2); }
   .poll-vote-btn.voted { background:rgba(124,111,255,0.14); border-color:var(--accent); color:var(--accent2); }
+
+  /* ════════════════════════════
+     MOBİL UI DESTEĞİ
+  ════════════════════════════ */
+  .screen { height: 100vh; height: 100dvh; }
+
+  @media (max-width: 768px) {
+    .auth-card { padding: 32px 22px; max-width: 100%; }
+    .brand { font-size: 28px; }
+
+    .lobby-body { padding: 20px 16px; gap: 14px; }
+    .lobby-card { width: 100%; max-width: 420px; padding: 26px 22px; }
+
+    .top-bar, .room-topbar { padding: 0 12px; }
+    .room-info { gap: 6px; flex-wrap: wrap; row-gap: 4px; }
+    .username-label { display: none; }
+    .quality-badge span#qualityLabel { display: none; }
+
+    .room-body { position: relative; }
+    .chat-sidebar {
+      position: fixed; top: 0; right: 0; bottom: 0; z-index: 900;
+      width: min(86vw, 340px) !important; border-left: 1px solid var(--border2);
+      box-shadow: -8px 0 32px rgba(0,0,0,0.5);
+    }
+    .chat-sidebar.hidden { transform: translateX(100%); width: min(86vw, 340px) !important; opacity: 1; pointer-events: none; }
+    .chat-sidebar:not(.hidden) { transform: translateX(0); }
+    .chat-sidebar { transition: transform 0.25s ease; }
+
+    .video-grid.p2, .video-grid.p3, .video-grid.p4 {
+      grid-template-columns: 1fr; grid-template-rows: none;
+      overflow-y: auto;
+    }
+    .video-grid.p3 .video-tile:first-child { grid-column: 1; }
+    .video-tile { min-height: 120px; }
+
+    .video-area.spotlight-mode { flex-direction: column; }
+    .video-area.spotlight-mode .video-grid {
+      width: 100%; min-width: 0; height: 90px; flex-direction: row; overflow-x: auto; overflow-y: hidden;
+    }
+    .video-area.spotlight-mode .video-grid .video-tile {
+      min-width: 110px; width: 110px; height: 100%; min-height: 0;
+    }
+
+    .control-bar { gap: 4px; padding: 8px; }
+    .ctrl-btn, .raise-hand-btn, .host-panel-btn, .rec-btn, .ctrl-btn-leave {
+      min-width: 46px; padding: 8px 10px; font-size: 16px;
+    }
+    .ctrl-btn span.ctrl-label, .raise-hand-btn span.ctrl-label,
+    .host-panel-btn span.ctrl-label, .rec-btn span.ctrl-label, .ctrl-btn-leave span.ctrl-label {
+      display: none;
+    }
+
+    .modal, .profile-modal, .device-modal {
+      width: calc(100vw - 32px) !important; max-width: 420px; padding: 22px;
+    }
+
+    .join-request-toast {
+      left: 12px; right: 12px; min-width: 0;
+    }
+    .request-modal { left: 12px; right: 12px; transform: none; min-width: 0; width: auto; }
+
+    #wbToolbar { left: 8px; right: 8px; transform: none; max-width: calc(100vw - 16px); }
+  }
+
+  @media (max-width: 420px) {
+    .waiting-card { padding: 32px 24px; }
+    .lobby-card { padding: 22px 18px; }
+    .ctrl-btn, .raise-hand-btn, .host-panel-btn, .rec-btn, .ctrl-btn-leave { min-width: 40px; padding: 7px 8px; }
+    .reaction-bar { gap: 2px; padding: 5px 7px; }
+  }
 </style>
 </head>
 <body>
@@ -1943,6 +2014,38 @@ function buildPeer(code, remoteUid) {
     const info = knownParticipants[remoteUid];
     getOrCreateRemoteTile(remoteUid, info?.username || remoteUid.slice(0,6));
     attachRemoteStream(remoteUid, remoteStream);
+
+    if (track.kind === 'video') {
+      // Karşı taraf kamerayı kapatınca profil fotosu göster
+      track.onmute = () => {
+        const tile = document.getElementById(`tile-${remoteUid}`);
+        if (!tile) return;
+        tile.querySelectorAll('video').forEach(v => v.remove());
+        if (!tile.querySelector('.tile-avatar')) {
+          const av = document.createElement('div');
+          av.className = 'tile-avatar';
+          av.textContent = initials(knownParticipants[remoteUid]?.username || remoteUid.slice(0,6));
+          tile.prepend(av);
+        }
+        const camBadge = document.getElementById(`cam-${remoteUid}`);
+        if (camBadge) camBadge.textContent = '📵';
+      };
+      // Karşı taraf kamerayı açınca tekrar video göster
+      track.onunmute = () => {
+        const tile = document.getElementById(`tile-${remoteUid}`);
+        if (!tile) return;
+        tile.querySelectorAll('.tile-avatar').forEach(a => a.remove());
+        let v = tile.querySelector('video');
+        if (!v) {
+          v = document.createElement('video');
+          v.autoplay = true; v.playsInline = true;
+          tile.prepend(v);
+        }
+        v.srcObject = remoteStream;
+        const camBadge = document.getElementById(`cam-${remoteUid}`);
+        if (camBadge) camBadge.textContent = '📷';
+      };
+    }
   };
 
   pc.onconnectionstatechange = () => {
@@ -2027,28 +2130,35 @@ window.toggleCam = async function() {
   btn.innerHTML = `${camOn?'📷':'📵'} <span class="ctrl-label">${camOn?'Kamera':'Kapalı'}</span>`;
 
   if (!camOn) {
-    // Kamerayı tamamen durdur — ışık söner
     localStream.getVideoTracks().forEach(t => t.stop());
-    // Peer connection'larda null gönder (siyah kare yerine)
-    for (const pc of Object.values(peerConnections)) {
-      const sender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
-      if (sender) sender.replaceTrack(null).catch(()=>{});
+    // Ekran paylaşımı aktifken peer track'lerine dokunma
+    if (!screenOn) {
+      for (const pc of Object.values(peerConnections)) {
+        const sender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
+        if (sender) sender.replaceTrack(null).catch(()=>{});
+      }
     }
   } else {
-    // Kamerayı yeniden aç
     try {
       const newStream = await navigator.mediaDevices.getUserMedia({
         video: selectedCamId ? { deviceId: { exact: selectedCamId } } : true
       });
       const newTrack = newStream.getVideoTracks()[0];
-      // localStream'e ekle
       localStream.getVideoTracks().forEach(t => localStream.removeTrack(t));
       localStream.addTrack(newTrack);
-      // Peer connection'lara gönder
-      for (const pc of Object.values(peerConnections)) {
-        const sender = pc.getSenders().find(s => s.track === null || (s.track && s.track.kind === 'video'));
-        if (sender) sender.replaceTrack(newTrack).catch(()=>{});
-        else pc.addTrack(newTrack, localStream);
+      // Ekran paylaşımı aktifken peer track'lerine dokunma (screen track bozulur)
+      if (!screenOn) {
+        let needsRenegotiation = false;
+        for (const pc of Object.values(peerConnections)) {
+          const sender = pc.getSenders().find(s => s.track === null || (s.track && s.track.kind === 'video'));
+          if (sender) {
+            sender.replaceTrack(newTrack).catch(()=>{});
+          } else {
+            pc.addTrack(newTrack, localStream);
+            needsRenegotiation = true;
+          }
+        }
+        if (needsRenegotiation) await sendRenegotiation();
       }
     } catch(e) {
       camOn = false;
@@ -2590,18 +2700,24 @@ function initWhiteboard() {
   // Pencere boyutu değişince canvas'ı yeniden ayarla
   window.addEventListener('resize', fitWbCanvas);
 
-  // Mevcut çizimi yükle
-  get(ref(db, `rooms/${currentRoom}/whiteboard/data`)).then(snap => {
-    if (!snap.exists()) return;
-    const img = new Image();
-    img.onload = () => wbCtx.drawImage(img, 0, 0, wbCanvas.width, wbCanvas.height);
-    img.src = snap.val();
-  });
+  // Mevcut çizimi yükle — image yüklendikten SONRA stroke listener'ı başlat
+  // (aksi halde image, strokes'ları siliyor)
+  const startStrokeListener = () => {
+    onChildAdded(ref(db, `rooms/${currentRoom}/whiteboard/strokes`), (snap) => {
+      const s = snap.val();
+      if (s.uid !== currentUser.uid) applyRemoteStroke(s);
+    });
+  };
 
-  // Diğerlerinin stroke'larını dinle
-  onChildAdded(ref(db, `rooms/${currentRoom}/whiteboard/strokes`), (snap) => {
-    const s = snap.val();
-    if (s.uid !== currentUser.uid) applyRemoteStroke(s);
+  get(ref(db, `rooms/${currentRoom}/whiteboard/data`)).then(snap => {
+    if (!snap.exists()) { startStrokeListener(); return; }
+    const img = new Image();
+    img.onload = () => {
+      wbCtx.drawImage(img, 0, 0, wbCanvas.width, wbCanvas.height);
+      startStrokeListener();
+    };
+    img.onerror = () => startStrokeListener();
+    img.src = snap.val();
   });
 
   document.getElementById('wbSize').addEventListener('input', e => { wbSize = +e.target.value; });
@@ -2662,6 +2778,14 @@ function wbMove(e) {
     wbStartX=x; wbStartY=y;
   } else if (wbTool === 'eraser') {
     ctx.fillStyle='#fff'; ctx.fillRect(x-wbSize*2,y-wbSize*2,wbSize*4,wbSize*4);
+    const now2 = Date.now();
+    if (now2 - wbThrottle > 50) {
+      wbThrottle = now2;
+      push(ref(db,`rooms/${currentRoom}/whiteboard/strokes`), {
+        tool:'eraser', x1:x-wbSize*2, y1:y-wbSize*2,
+        color:'#fff', size:wbSize, uid:currentUser.uid, ts:now2
+      });
+    }
   } else {
     ctx.putImageData(wbSnapshot,0,0); ctx.beginPath();
     if (wbTool==='line')   { ctx.moveTo(wbStartX,wbStartY); ctx.lineTo(x,y); ctx.stroke(); }
@@ -2677,6 +2801,14 @@ function wbMove(e) {
 function wbUp(e) {
   if (!wbDrawing) return;
   wbDrawing = false;
+  // line/rect/circle tamamlandığında Firebase'e gönder (senkronizasyon)
+  if (wbTool === 'line' || wbTool === 'rect' || wbTool === 'circle') {
+    const pos = getWbPos(e);
+    push(ref(db,`rooms/${currentRoom}/whiteboard/strokes`), {
+      tool:wbTool, x1:wbStartX, y1:wbStartY, x2:pos.x, y2:pos.y,
+      color:wbColor, size:wbSize, uid:currentUser.uid, ts:Date.now()
+    });
+  }
   clearTimeout(wbSaveTimer);
   wbSaveTimer = setTimeout(() => {
     if (!wbCanvas||!currentRoom) return;
@@ -2685,9 +2817,25 @@ function wbUp(e) {
 }
 
 function applyRemoteStroke(s) {
-  if (!wbCtx||s.tool!=='pen') return;
+  if (!wbCtx) return;
   wbCtx.lineWidth=s.size; wbCtx.lineCap='round'; wbCtx.strokeStyle=s.color;
-  wbCtx.beginPath(); wbCtx.moveTo(s.x1,s.y1); wbCtx.lineTo(s.x2,s.y2); wbCtx.stroke();
+  if (s.tool === 'pen') {
+    wbCtx.beginPath(); wbCtx.moveTo(s.x1,s.y1); wbCtx.lineTo(s.x2,s.y2); wbCtx.stroke();
+  } else if (s.tool === 'line') {
+    wbCtx.beginPath(); wbCtx.moveTo(s.x1,s.y1); wbCtx.lineTo(s.x2,s.y2); wbCtx.stroke();
+  } else if (s.tool === 'rect') {
+    wbCtx.beginPath(); wbCtx.strokeRect(s.x1,s.y1,s.x2-s.x1,s.y2-s.y1);
+  } else if (s.tool === 'circle') {
+    const rx=(s.x2-s.x1)/2, ry=(s.y2-s.y1)/2;
+    wbCtx.beginPath(); wbCtx.ellipse(s.x1+rx,s.y1+ry,Math.abs(rx),Math.abs(ry),0,0,2*Math.PI); wbCtx.stroke();
+  } else if (s.tool === 'eraser') {
+    wbCtx.fillStyle='#fff'; wbCtx.fillRect(s.x1,s.y1,s.size*4,s.size*4);
+  }
+}
+
+function showHostWbControls() {
+  const btn = document.getElementById('wbHostClear');
+  if (btn) btn.style.display = '';
 }
 
 window.clearWhiteboard = function() {
