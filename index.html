@@ -885,48 +885,49 @@
   <div class="auth-glow"></div>
   <div class="waiting-card">
     <div class="waiting-spinner"></div>
-    <div class="waiting-title">Onay bekleniyor...</div>
-    <div class="waiting-sub">Host seni odaya almak için onaylaması gerekiyor.</div>
-    <div class="waiting-code">Oda kodu: <span id="waitingCode">——</span></div>
-    <button class="btn-cancel-wait" onclick="cancelWaiting()">İptal</button>
+    <div class="waiting-title" data-i18n="waitingTitle">Onay bekleniyor...</div>
+    <div class="waiting-sub" data-i18n="waitingSub">Host seni odaya almak için onaylaması gerekiyor.</div>
+    <div class="waiting-code"><span data-i18n="waitingCodeLabel">Oda kodu:</span> <span id="waitingCode">——</span></div>
+    <button class="btn-cancel-wait" onclick="cancelWaiting()" data-i18n="cancelBtn">İptal</button>
   </div>
 </div>
 
 <!-- ══════════════════ AUTH SCREEN ══════════════════ -->
 <div id="authScreen" class="screen active">
   <div class="auth-glow"></div>
+  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" title="Language">EN</button>
   <div class="auth-card">
     <div class="brand">SoLikez</div>
-    <div class="brand-sub">Tarayıcıdan tarayıcıya, anında bağlan.</div>
+    <div class="brand-sub" data-i18n="brandSub">Tarayıcıdan tarayıcıya, anında bağlan.</div>
     <div class="tab-row">
-      <button class="tab active" onclick="switchTab('login')">Giriş Yap</button>
-      <button class="tab" onclick="switchTab('register')">Kayıt Ol</button>
+      <button class="tab active" id="loginTabBtn" onclick="switchTab('login')" data-i18n="loginTab">Giriş Yap</button>
+      <button class="tab" id="registerTabBtn" onclick="switchTab('register')" data-i18n="registerTab">Kayıt Ol</button>
     </div>
     <div id="loginForm">
       <div class="field">
-        <label>KULLANICI ADI</label>
-        <input type="text" id="loginUser" placeholder="kullaniciadi" autocomplete="username">
+        <label data-i18n="usernameLabel">KULLANICI ADI</label>
+        <input type="text" id="loginUser" placeholder="kullaniciadi" autocomplete="username" data-i18n-ph="usernamePh">
       </div>
       <div class="field">
-        <label>ŞİFRE</label>
+        <label data-i18n="passwordLabel">ŞİFRE</label>
         <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
       </div>
-      <button class="btn-primary" onclick="doLogin()" id="loginBtn">Giriş Yap</button>
+      <button class="btn-primary" onclick="doLogin()" id="loginBtn" data-i18n="loginTab">Giriş Yap</button>
     </div>
     <div id="registerForm" style="display:none;">
       <div class="field">
-        <label>KULLANICI ADI</label>
-        <input type="text" id="regUser" placeholder="kullaniciadi" autocomplete="username">
+        <label data-i18n="usernameLabel">KULLANICI ADI</label>
+        <input type="text" id="regUser" placeholder="kullaniciadi" autocomplete="username" data-i18n-ph="usernamePh">
       </div>
       <div class="field">
-        <label>ŞİFRE</label>
-        <input type="password" id="regPass" placeholder="En az 6 karakter" autocomplete="new-password">
+        <label data-i18n="passwordLabel">ŞİFRE</label>
+        <input type="password" id="regPass" placeholder="En az 6 karakter" autocomplete="new-password" data-i18n-ph="regPassPh">
       </div>
       <div class="field">
-        <label>ŞİFRE TEKRAR</label>
+        <label data-i18n="passwordRepeatLabel">ŞİFRE TEKRAR</label>
         <input type="password" id="regPass2" placeholder="••••••••" autocomplete="new-password">
       </div>
-      <button class="btn-primary" onclick="doRegister()" id="registerBtn">Kayıt Ol</button>
+      <button class="btn-primary" onclick="doRegister()" id="registerBtn" data-i18n="registerTab">Kayıt Ol</button>
     </div>
     <div class="auth-error" id="authError"></div>
   </div>
@@ -939,40 +940,41 @@
     <div class="user-chip">
       <div class="avatar" id="lobbyAvatar" style="cursor:pointer;" onclick="openProfile()" title="Profil"></div>
       <span class="username-label" id="lobbyUsername" style="cursor:pointer;" onclick="openProfile()"></span>
-      <button class="btn-ghost" onclick="openProfile()">Profil</button>
-      <button class="btn-ghost" onclick="doLogout()">Çıkış</button>
+      <button class="btn-ghost" onclick="openProfile()" data-i18n="profileBtn">Profil</button>
+      <button class="lang-toggle" id="langToggle2" onclick="toggleLang()" title="Language">EN</button>
+      <button class="btn-ghost" onclick="doLogout()" data-i18n="logoutBtn">Çıkış</button>
     </div>
   </div>
   <div class="lobby-body">
     <div class="lobby-card">
       <div class="lobby-icon create">🎙️</div>
-      <h2>Oda Oluştur</h2>
-      <p>Yeni bir oda başlat. İstersen özel kod ve şifre belirle.</p>
+      <h2 data-i18n="createRoomTitle">Oda Oluştur</h2>
+      <p data-i18n="createRoomDesc">Yeni bir oda başlat. İstersen özel kod ve şifre belirle.</p>
       <div class="field" style="margin-bottom:10px;">
-        <label style="font-size:11px;color:var(--text2);font-weight:500;letter-spacing:0.3px;">ODA KODU (boş bırakırsan otomatik)</label>
+        <label style="font-size:11px;color:var(--text2);font-weight:500;letter-spacing:0.3px;" data-i18n="roomCodeLabel">ODA KODU (boş bırakırsan otomatik)</label>
         <input type="text" id="customRoomCode" placeholder="Örn: OYUN1" maxlength="6"
           style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 13px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;width:100%;outline:none;letter-spacing:2px;font-weight:600;text-transform:uppercase;"
-          oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')">
+          oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')" data-i18n-ph="roomCodePh">
       </div>
       <div class="field" style="margin-bottom:14px;">
-        <label style="font-size:11px;color:var(--text2);font-weight:500;letter-spacing:0.3px;">ODA ŞİFRESİ (isteğe bağlı)</label>
+        <label style="font-size:11px;color:var(--text2);font-weight:500;letter-spacing:0.3px;" data-i18n="roomPassLabel">ODA ŞİFRESİ (isteğe bağlı)</label>
         <input type="password" id="roomPassword" placeholder="Şifresiz bırakmak için boş bırak"
-          style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 13px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;width:100%;outline:none;">
+          style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 13px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;width:100%;outline:none;" data-i18n-ph="roomPassPh">
       </div>
       <div class="lobby-error" id="createError" style="margin-bottom:10px;font-size:12px;color:var(--danger);min-height:16px;"></div>
-      <button class="btn-create" onclick="openDevicePicker('create')">Oda Oluştur</button>
+      <button class="btn-create" onclick="openDevicePicker('create')" data-i18n="createRoomBtn">Oda Oluştur</button>
     </div>
     <div class="lobby-card">
       <div class="lobby-icon join">🔗</div>
-      <h2>Odaya Katıl</h2>
-      <p>Sana iletilen oda kodunu girerek anında bağlan.</p>
+      <h2 data-i18n="joinRoomTitle">Odaya Katıl</h2>
+      <p data-i18n="joinRoomDesc">Sana iletilen oda kodunu girerek anında bağlan.</p>
       <div class="join-input-wrap">
         <input type="text" id="joinCodeInput" placeholder="ABC123" maxlength="6" oninput="this.value=this.value.toUpperCase()">
         <button onclick="joinRoomCheck()">→</button>
       </div>
       <div style="margin-top:10px;">
         <input type="password" id="joinPassword" placeholder="Şifre (gerekiyorsa)"
-          style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 13px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;width:100%;outline:none;">
+          style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 13px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;width:100%;outline:none;" data-i18n-ph="joinPassPh">
       </div>
       <div class="lobby-error" id="joinError"></div>
     </div>
@@ -997,13 +999,13 @@
         </div>
         <span id="qualityLabel">—</span>
         <div class="quality-popup" id="qualityPopup">
-          <div class="qp-title">Bağlantı İstatistikleri</div>
-          <div class="qp-row"><span class="qp-label">Gecikme</span><span class="qp-val" id="qs-rtt">—</span></div>
-          <div class="qp-row"><span class="qp-label">Paket Kaybı</span><span class="qp-val" id="qs-loss">—</span></div>
-          <div class="qp-row"><span class="qp-label">Video Bitrate</span><span class="qp-val" id="qs-vbr">—</span></div>
-          <div class="qp-row"><span class="qp-label">Ses Bitrate</span><span class="qp-val" id="qs-abr">—</span></div>
-          <div class="qp-row"><span class="qp-label">Çözünürlük</span><span class="qp-val" id="qs-res">—</span></div>
-          <div class="qp-row"><span class="qp-label">FPS</span><span class="qp-val" id="qs-fps">—</span></div>
+          <div class="qp-title" data-i18n="qpTitle">Bağlantı İstatistikleri</div>
+          <div class="qp-row"><span class="qp-label" data-i18n="qpRtt">Gecikme</span><span class="qp-val" id="qs-rtt">—</span></div>
+          <div class="qp-row"><span class="qp-label" data-i18n="qpLoss">Paket Kaybı</span><span class="qp-val" id="qs-loss">—</span></div>
+          <div class="qp-row"><span class="qp-label" data-i18n="qpVbr">Video Bitrate</span><span class="qp-val" id="qs-vbr">—</span></div>
+          <div class="qp-row"><span class="qp-label" data-i18n="qpAbr">Ses Bitrate</span><span class="qp-val" id="qs-abr">—</span></div>
+          <div class="qp-row"><span class="qp-label" data-i18n="qpRes">Çözünürlük</span><span class="qp-val" id="qs-res">—</span></div>
+          <div class="qp-row"><span class="qp-label" data-i18n="qpFps">FPS</span><span class="qp-val" id="qs-fps">—</span></div>
         </div>
       </div>
     </div>
@@ -1027,7 +1029,7 @@
         </div>
         <div class="spotlight-overlay" id="spotlightOverlay">
           <div class="spotlight-name" id="spotlightName"></div>
-          <button class="spotlight-unpin" onclick="unpin()">✕ Sabitlemeyi Kaldır</button>
+          <button class="spotlight-unpin" onclick="unpin()" data-i18n="unpinBtn">✕ Sabitlemeyi Kaldır</button>
         </div>
       </div>
     </div>
@@ -1035,12 +1037,12 @@
     <div class="speaker-hint" id="speakerHint"></div>
     <div class="chat-sidebar" id="chatSidebar">
       <div class="chat-header" style="justify-content:space-between;">
-        <span>💬 Sohbet</span>
+        <span data-i18n="chatHeader">💬 Sohbet</span>
         <button onclick="toggleChat()" style="background:none;border:none;color:var(--text2);font-size:16px;cursor:pointer;line-height:1;" title="Kapat">✕</button>
       </div>
       <div class="chat-messages" id="chatMessages"></div>
       <div class="chat-input-row">
-        <input type="text" id="chatInput" placeholder="Mesaj yaz..." onkeydown="if(event.key==='Enter')sendChat()">
+        <input type="text" id="chatInput" placeholder="Mesaj yaz..." onkeydown="if(event.key==='Enter')sendChat()" data-i18n-ph="chatInputPh">
         <button class="chat-send-btn" onclick="sendChat()">➤</button>
       </div>
     </div>
@@ -1048,13 +1050,13 @@
 
   <div class="control-bar">
     <button class="ctrl-btn" id="micBtn" onclick="toggleMic()">
-      🎤 <span class="ctrl-label">Mikrofon</span>
+      🎤 <span class="ctrl-label" data-i18n="micLabel">Mikrofon</span>
     </button>
     <button class="ctrl-btn" id="camBtn" onclick="toggleCam()">
-      📷 <span class="ctrl-label">Kamera</span>
+      📷 <span class="ctrl-label" data-i18n="camLabel">Kamera</span>
     </button>
     <button class="ctrl-btn" id="screenBtn" onclick="requestScreen()">
-      🖥️ <span class="ctrl-label">Ekran</span>
+      🖥️ <span class="ctrl-label" data-i18n="screenLabel">Ekran</span>
     </button>
     <div class="reaction-bar">
       <button class="reaction-btn" onclick="sendReaction('👍')" title="Beğen">👍</button>
@@ -1064,28 +1066,28 @@
       <button class="reaction-btn" onclick="sendReaction('👏')" title="Alkış">👏</button>
     </div>
     <button class="raise-hand-btn" id="raiseHandBtn" onclick="toggleHand()">
-      ✋ <span class="ctrl-label">El Kaldır</span>
+      ✋ <span class="ctrl-label" data-i18n="raiseHandLabel">El Kaldır</span>
     </button>
     <button class="ctrl-btn" id="devicesBtn" onclick="openDevicePicker('switch')">
-      ⚙️ <span class="ctrl-label">Cihazlar</span>
+      ⚙️ <span class="ctrl-label" data-i18n="devicesLabel">Cihazlar</span>
     </button>
     <button class="ctrl-btn" id="chatToggleBtn" onclick="toggleChat()">
-      💬 <span class="ctrl-label">Sohbet</span>
+      💬 <span class="ctrl-label" data-i18n="chatToggleLabel">Sohbet</span>
     </button>
     <button class="ctrl-btn" id="wbBtn" onclick="toggleWhiteboard()">
-      ✏️ <span class="ctrl-label">Tahta</span>
+      ✏️ <span class="ctrl-label" data-i18n="wbLabel">Tahta</span>
     </button>
     <button class="rec-btn" id="recBtn" onclick="toggleRecording()">
-      ⏺️ <span class="ctrl-label">Kaydet</span>
+      ⏺️ <span class="ctrl-label" data-i18n="recLabel">Kaydet</span>
     </button>
     <button class="host-panel-btn" id="hostPanelBtn" onclick="openHostPanel()" style="display:none;">
-      👑 <span class="ctrl-label">Katılımcılar</span>
+      👑 <span class="ctrl-label" data-i18n="participantsLabel">Katılımcılar</span>
     </button>
     <button class="ctrl-btn" id="pollBtn" onclick="openPollModal()">
-      🗳️ <span class="ctrl-label">Anket</span>
+      🗳️ <span class="ctrl-label" data-i18n="pollLabel">Anket</span>
     </button>
     <button class="ctrl-btn-leave" onclick="leaveRoom()">
-      📵 <span class="ctrl-label">Ayrıl</span>
+      📵 <span class="ctrl-label" data-i18n="leaveLabel">Ayrıl</span>
     </button>
   </div>
 </div>
@@ -1113,52 +1115,52 @@
   <div class="wb-sep"></div>
   <input type="range" class="wb-size" id="wbSize" min="2" max="30" value="4" title="Kalınlık" style="width:70px;">
   <div class="wb-sep"></div>
-  <button class="wb-tool" onclick="clearWhiteboard()" style="font-size:11px;width:auto;padding:0 8px;">Temizle</button>
-  <button class="wb-tool" id="wbHostClear" onclick="hostClearWhiteboard()" style="font-size:11px;width:auto;padding:0 8px;display:none;">🗑️ Herkesi Sil</button>
+  <button class="wb-tool" onclick="clearWhiteboard()" style="font-size:11px;width:auto;padding:0 8px;" data-i18n="wbClearBtn">Temizle</button>
+  <button class="wb-tool" id="wbHostClear" onclick="hostClearWhiteboard()" style="font-size:11px;width:auto;padding:0 8px;display:none;" data-i18n="wbClearAllBtn">🗑️ Herkesi Sil</button>
 </div>
 
 <!-- ══════════════════ ANKET MODAL ══════════════════ -->
 <div class="modal-overlay" id="pollModal">
   <div class="modal" style="width:420px;">
-    <div class="modal-title">🗳️ Anlık Anket <button onclick="closePollModal()" style="margin-left:auto;background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer;">×</button></div>
+    <div class="modal-title"><span data-i18n="pollModalTitle">🗳️ Anlık Anket</span> <button onclick="closePollModal()" style="margin-left:auto;background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer;">×</button></div>
     <!-- Host: anket oluştur -->
     <div id="pollCreate" style="display:none;">
       <div class="profile-field">
-        <label>SORU</label>
-        <input type="text" id="pollQuestion" placeholder="Soru yaz..." maxlength="120">
+        <label data-i18n="pollQuestionLabel">SORU</label>
+        <input type="text" id="pollQuestion" placeholder="Soru yaz..." maxlength="120" data-i18n-ph="pollQuestionPh">
       </div>
       <div id="pollOptions">
-        <div class="profile-field"><label>SEÇENEK 1</label><input type="text" class="poll-opt" placeholder="Seçenek 1"></div>
-        <div class="profile-field"><label>SEÇENEK 2</label><input type="text" class="poll-opt" placeholder="Seçenek 2"></div>
+        <div class="profile-field"><label data-i18n="pollOption1">SEÇENEK 1</label><input type="text" class="poll-opt" placeholder="Seçenek 1" data-i18n-ph="pollOption1"></div>
+        <div class="profile-field"><label data-i18n="pollOption2">SEÇENEK 2</label><input type="text" class="poll-opt" placeholder="Seçenek 2" data-i18n-ph="pollOption2"></div>
       </div>
-      <button onclick="addPollOption()" style="background:none;border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text2);font-size:13px;padding:6px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:14px;">+ Seçenek Ekle</button>
-      <button class="btn-profile-save" onclick="startPoll()">Anketi Başlat</button>
+      <button onclick="addPollOption()" style="background:none;border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text2);font-size:13px;padding:6px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:14px;" data-i18n="pollAddOptionBtn">+ Seçenek Ekle</button>
+      <button class="btn-profile-save" onclick="startPoll()" data-i18n="pollStartBtn">Anketi Başlat</button>
     </div>
     <!-- Herkes: mevcut anket -->
     <div id="pollActive" style="display:none;">
       <div id="pollQuestionText" style="font-size:15px;font-weight:500;color:var(--text);margin-bottom:16px;line-height:1.4;"></div>
       <div id="pollOptionsList"></div>
-      <button id="pollEndBtn" onclick="endPoll()" style="display:none;margin-top:12px;background:rgba(255,79,106,0.1);border:1px solid rgba(255,79,106,0.25);border-radius:var(--radius-sm);color:var(--danger);font-size:13px;font-family:'DM Sans',sans-serif;padding:7px 16px;cursor:pointer;font-weight:500;">Anketi Bitir</button>
+      <button id="pollEndBtn" onclick="endPoll()" style="display:none;margin-top:12px;background:rgba(255,79,106,0.1);border:1px solid rgba(255,79,106,0.25);border-radius:var(--radius-sm);color:var(--danger);font-size:13px;font-family:'DM Sans',sans-serif;padding:7px 16px;cursor:pointer;font-weight:500;" data-i18n="pollEndBtn">Anketi Bitir</button>
     </div>
     <!-- Sonuç yok -->
-    <div id="pollEmpty" style="text-align:center;padding:20px 0;font-size:13px;color:var(--text2);">Henüz aktif anket yok.</div>
+    <div id="pollEmpty" style="text-align:center;padding:20px 0;font-size:13px;color:var(--text2);" data-i18n="pollEmpty">Henüz aktif anket yok.</div>
   </div>
 </div>
 
 <!-- ══════════════════ JOIN REQUEST TOAST (HOST GÖRÜR) ══════════════════ -->
 <div class="join-request-toast" id="joinRequestToast">
-  <div class="jrt-title">🔔 Katılım İsteği</div>
-  <div class="jrt-sub" id="joinRequestName">Kullanıcı odaya girmek istiyor.</div>
+  <div class="jrt-title" data-i18n="jrtTitle">🔔 Katılım İsteği</div>
+  <div class="jrt-sub" id="joinRequestName" data-i18n="jrtDefaultName">Kullanıcı odaya girmek istiyor.</div>
   <div class="jrt-btns">
-    <button class="jrt-approve" onclick="approveJoin()">✓ Kabul Et</button>
-    <button class="jrt-deny"    onclick="denyJoin()">✕ Reddet</button>
+    <button class="jrt-approve" onclick="approveJoin()" data-i18n="approveBtn">✓ Kabul Et</button>
+    <button class="jrt-deny"    onclick="denyJoin()" data-i18n="denyBtn">✕ Reddet</button>
   </div>
 </div>
 
 <!-- ══════════════════ HOST PANEL MODAL ══════════════════ -->
 <div class="modal-overlay" id="hostPanelModal">
   <div class="modal">
-    <div class="modal-title">👑 Katılımcı Yönetimi <button onclick="closeHostPanel()" style="margin-left:auto;background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer;line-height:1;">×</button></div>
+    <div class="modal-title"><span data-i18n="hostPanelTitle">👑 Katılımcı Yönetimi</span> <button onclick="closeHostPanel()" style="margin-left:auto;background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer;line-height:1;">×</button></div>
     <div id="hostParticipantList"></div>
   </div>
 </div>
@@ -1166,44 +1168,44 @@
 
 <!-- ══════════════════ SCREEN SHARE REQUEST (HOST GÖRÜR) ══════════════════ -->
 <div class="request-modal" id="screenRequestModal">
-  <div class="request-modal-title">🖥️ Ekran Paylaşım İsteği</div>
-  <div class="request-modal-body" id="screenRequestBody">Kullanıcı ekran paylaşmak istiyor.</div>
+  <div class="request-modal-title" data-i18n="screenRequestTitle">🖥️ Ekran Paylaşım İsteği</div>
+  <div class="request-modal-body" id="screenRequestBody" data-i18n="screenRequestDefaultBody">Kullanıcı ekran paylaşmak istiyor.</div>
   <div class="request-btns">
-    <button class="btn-approve" onclick="approveScreen()">✓ Onayla</button>
-    <button class="btn-deny" onclick="denyScreen()">✕ Reddet</button>
+    <button class="btn-approve" onclick="approveScreen()" data-i18n="approveBtn2">✓ Onayla</button>
+    <button class="btn-deny" onclick="denyScreen()" data-i18n="denyBtn">✕ Reddet</button>
   </div>
 </div>
 
 <!-- ══════════════════ PROFILE MODAL ══════════════════ -->
 <div class="profile-modal-overlay" id="profileModal">
   <div class="profile-modal">
-    <h2>Profil <button class="profile-close" onclick="closeProfile()">×</button></h2>
+    <h2><span data-i18n="profileTitle">Profil</span> <button class="profile-close" onclick="closeProfile()">×</button></h2>
 
     <div class="profile-section">
-      <div class="profile-section-title">Kullanıcı Adı</div>
+      <div class="profile-section-title" data-i18n="usernameSection">Kullanıcı Adı</div>
       <div class="profile-field">
-        <label>YENİ KULLANICI ADI</label>
-        <input type="text" id="newUsername" placeholder="yeni_kullanici_adi">
+        <label data-i18n="newUsernameLabel">YENİ KULLANICI ADI</label>
+        <input type="text" id="newUsername" placeholder="yeni_kullanici_adi" data-i18n-ph="newUsernamePh">
       </div>
-      <button class="btn-profile-save" onclick="changeUsername()">Kullanıcı Adını Güncelle</button>
+      <button class="btn-profile-save" onclick="changeUsername()" data-i18n="updateUsernameBtn">Kullanıcı Adını Güncelle</button>
       <div class="profile-msg" id="usernameMsg"></div>
     </div>
 
     <div class="profile-section">
-      <div class="profile-section-title">Şifre Değiştir</div>
+      <div class="profile-section-title" data-i18n="passwordSection">Şifre Değiştir</div>
       <div class="profile-field">
-        <label>MEVCUT ŞİFRE</label>
+        <label data-i18n="currentPassLabel">MEVCUT ŞİFRE</label>
         <input type="password" id="currentPass" placeholder="••••••••">
       </div>
       <div class="profile-field">
-        <label>YENİ ŞİFRE</label>
-        <input type="password" id="newPass" placeholder="En az 6 karakter">
+        <label data-i18n="passwordLabel">YENİ ŞİFRE</label>
+        <input type="password" id="newPass" placeholder="En az 6 karakter" data-i18n-ph="regPassPh">
       </div>
       <div class="profile-field">
-        <label>YENİ ŞİFRE TEKRAR</label>
+        <label data-i18n="passwordRepeatLabel">YENİ ŞİFRE TEKRAR</label>
         <input type="password" id="newPass2" placeholder="••••••••">
       </div>
-      <button class="btn-profile-save" onclick="changePassword()">Şifreyi Güncelle</button>
+      <button class="btn-profile-save" onclick="changePassword()" data-i18n="updatePasswordBtn">Şifreyi Güncelle</button>
       <div class="profile-msg" id="passwordMsg"></div>
     </div>
   </div>
@@ -1212,22 +1214,22 @@
 <!-- ══════════════════ DEVICE PICKER MODAL ══════════════════ -->
 <div class="device-modal-overlay" id="deviceModal">
   <div class="device-modal">
-    <h2>Cihaz Seçimi</h2>
-    <p>Kamera ve mikrofon seç, önizlemeyi kontrol et.</p>
+    <h2 data-i18n="deviceModalTitle">Cihaz Seçimi</h2>
+    <p data-i18n="deviceModalDesc">Kamera ve mikrofon seç, önizlemeyi kontrol et.</p>
     <div class="device-preview" id="devicePreview">
-      <div class="no-cam">Kamera yükleniyor...</div>
+      <div class="no-cam" data-i18n="camLoading">Kamera yükleniyor...</div>
     </div>
     <div class="device-field">
-      <label>KAMERA</label>
+      <label data-i18n="cameraLabel">KAMERA</label>
       <select id="camSelect" onchange="previewDevice()"></select>
     </div>
     <div class="device-field">
-      <label>MİKROFON</label>
+      <label data-i18n="micLabelUpper">MİKROFON</label>
       <select id="micSelect"></select>
     </div>
     <div class="device-btns">
-      <button class="btn-device-cancel" onclick="closeDevicePicker()">İptal</button>
-      <button class="btn-device-ok" onclick="confirmDevice()">Devam Et</button>
+      <button class="btn-device-cancel" onclick="closeDevicePicker()" data-i18n="cancelBtn">İptal</button>
+      <button class="btn-device-ok" onclick="confirmDevice()" data-i18n="continueBtn">Devam Et</button>
     </div>
   </div>
 </div>
@@ -1254,6 +1256,187 @@ const firebaseConfig = {
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getDatabase(app);
+
+// ══════════════════════════════════════════════════════
+//  I18N
+// ══════════════════════════════════════════════════════
+let currentLang = localStorage.getItem('solikez_lang') || 'tr';
+
+const STATIC_I18N = {
+  brandSub: { tr: 'Tarayıcıdan tarayıcıya, anında bağlan.', en: 'Browser to browser, connect instantly.' },
+  loginTab: { tr: 'Giriş Yap', en: 'Log In' },
+  registerTab: { tr: 'Kayıt Ol', en: 'Sign Up' },
+  usernameLabel: { tr: 'KULLANICI ADI', en: 'USERNAME' },
+  usernamePh: { tr: 'kullaniciadi', en: 'username' },
+  passwordLabel: { tr: 'ŞİFRE', en: 'PASSWORD' },
+  passwordRepeatLabel: { tr: 'ŞİFRE TEKRAR', en: 'REPEAT PASSWORD' },
+  regPassPh: { tr: 'En az 6 karakter', en: 'At least 6 characters' },
+  profileBtn: { tr: 'Profil', en: 'Profile' },
+  logoutBtn: { tr: 'Çıkış', en: 'Log Out' },
+  createRoomTitle: { tr: 'Oda Oluştur', en: 'Create Room' },
+  createRoomDesc: { tr: 'Yeni bir oda başlat. İstersen özel kod ve şifre belirle.', en: 'Start a new room. Optionally set a custom code and password.' },
+  roomCodeLabel: { tr: 'ODA KODU (boş bırakırsan otomatik)', en: 'ROOM CODE (auto-generated if empty)' },
+  roomCodePh: { tr: 'Örn: OYUN1', en: 'E.g: GAME1' },
+  roomPassLabel: { tr: 'ODA ŞİFRESİ (isteğe bağlı)', en: 'ROOM PASSWORD (optional)' },
+  roomPassPh: { tr: 'Şifresiz bırakmak için boş bırak', en: 'Leave empty for no password' },
+  createRoomBtn: { tr: 'Oda Oluştur', en: 'Create Room' },
+  joinRoomTitle: { tr: 'Odaya Katıl', en: 'Join Room' },
+  joinRoomDesc: { tr: 'Sana iletilen oda kodunu girerek anında bağlan.', en: 'Enter the room code you were given to connect instantly.' },
+  joinPassPh: { tr: 'Şifre (gerekiyorsa)', en: 'Password (if required)' },
+  qpTitle: { tr: 'Bağlantı İstatistikleri', en: 'Connection Stats' },
+  qpRtt: { tr: 'Gecikme', en: 'Latency' },
+  qpLoss: { tr: 'Paket Kaybı', en: 'Packet Loss' },
+  qpVbr: { tr: 'Video Bitrate', en: 'Video Bitrate' },
+  qpAbr: { tr: 'Ses Bitrate', en: 'Audio Bitrate' },
+  qpRes: { tr: 'Çözünürlük', en: 'Resolution' },
+  qpFps: { tr: 'FPS', en: 'FPS' },
+  unpinBtn: { tr: '✕ Sabitlemeyi Kaldır', en: '✕ Unpin' },
+  chatHeader: { tr: '💬 Sohbet', en: '💬 Chat' },
+  chatInputPh: { tr: 'Mesaj yaz...', en: 'Type a message...' },
+  micLabel: { tr: 'Mikrofon', en: 'Mic' },
+  camLabel: { tr: 'Kamera', en: 'Camera' },
+  screenLabel: { tr: 'Ekran', en: 'Screen' },
+  raiseHandLabel: { tr: 'El Kaldır', en: 'Raise Hand' },
+  devicesLabel: { tr: 'Cihazlar', en: 'Devices' },
+  chatToggleLabel: { tr: 'Sohbet', en: 'Chat' },
+  wbLabel: { tr: 'Tahta', en: 'Board' },
+  recLabel: { tr: 'Kaydet', en: 'Record' },
+  participantsLabel: { tr: 'Katılımcılar', en: 'Participants' },
+  pollLabel: { tr: 'Anket', en: 'Poll' },
+  leaveLabel: { tr: 'Ayrıl', en: 'Leave' },
+  waitingTitle: { tr: 'Onay bekleniyor...', en: 'Waiting for approval...' },
+  waitingSub: { tr: 'Host seni odaya almak için onaylaması gerekiyor.', en: 'The host needs to approve you to join the room.' },
+  waitingCodeLabel: { tr: 'Oda kodu:', en: 'Room code:' },
+  cancelBtn: { tr: 'İptal', en: 'Cancel' },
+  wbClearBtn: { tr: 'Temizle', en: 'Clear' },
+  wbClearAllBtn: { tr: '🗑️ Herkesi Sil', en: '🗑️ Clear for Everyone' },
+  pollModalTitle: { tr: '🗳️ Anlık Anket', en: '🗳️ Live Poll' },
+  pollQuestionLabel: { tr: 'SORU', en: 'QUESTION' },
+  pollQuestionPh: { tr: 'Soru yaz...', en: 'Type a question...' },
+  pollOption1: { tr: 'SEÇENEK 1', en: 'OPTION 1' },
+  pollOption2: { tr: 'SEÇENEK 2', en: 'OPTION 2' },
+  pollAddOptionBtn: { tr: '+ Seçenek Ekle', en: '+ Add Option' },
+  pollStartBtn: { tr: 'Anketi Başlat', en: 'Start Poll' },
+  pollEndBtn: { tr: 'Anketi Bitir', en: 'End Poll' },
+  pollEmpty: { tr: 'Henüz aktif anket yok.', en: 'No active poll yet.' },
+  jrtTitle: { tr: '🔔 Katılım İsteği', en: '🔔 Join Request' },
+  jrtDefaultName: { tr: 'Kullanıcı odaya girmek istiyor.', en: 'A user wants to join the room.' },
+  approveBtn: { tr: '✓ Kabul Et', en: '✓ Accept' },
+  denyBtn: { tr: '✕ Reddet', en: '✕ Deny' },
+  hostPanelTitle: { tr: '👑 Katılımcı Yönetimi', en: '👑 Participant Management' },
+  screenRequestTitle: { tr: '🖥️ Ekran Paylaşım İsteği', en: '🖥️ Screen Share Request' },
+  screenRequestDefaultBody: { tr: 'Kullanıcı ekran paylaşmak istiyor.', en: 'A user wants to share their screen.' },
+  approveBtn2: { tr: '✓ Onayla', en: '✓ Approve' },
+  profileTitle: { tr: 'Profil', en: 'Profile' },
+  usernameSection: { tr: 'Kullanıcı Adı', en: 'Username' },
+  newUsernameLabel: { tr: 'YENİ KULLANICI ADI', en: 'NEW USERNAME' },
+  newUsernamePh: { tr: 'yeni_kullanici_adi', en: 'new_username' },
+  updateUsernameBtn: { tr: 'Kullanıcı Adını Güncelle', en: 'Update Username' },
+  passwordSection: { tr: 'Şifre Değiştir', en: 'Change Password' },
+  currentPassLabel: { tr: 'MEVCUT ŞİFRE', en: 'CURRENT PASSWORD' },
+  updatePasswordBtn: { tr: 'Şifreyi Güncelle', en: 'Update Password' },
+  deviceModalTitle: { tr: 'Cihaz Seçimi', en: 'Device Selection' },
+  deviceModalDesc: { tr: 'Kamera ve mikrofon seç, önizlemeyi kontrol et.', en: 'Select camera and microphone, check the preview.' },
+  camLoading: { tr: 'Kamera yükleniyor...', en: 'Loading camera...' },
+  cameraLabel: { tr: 'KAMERA', en: 'CAMERA' },
+  micLabelUpper: { tr: 'MİKROFON', en: 'MICROPHONE' },
+  continueBtn: { tr: 'Devam Et', en: 'Continue' },
+};
+
+const DYNAMIC_EN = {
+  'Anket başlatıldı!': 'Poll started!',
+  'Anket sonlandırıldı.': 'Poll ended.',
+  'Bağlantı koptu, yeniden deneniyor...': 'Connection lost, retrying...',
+  'Bağlantı kuruldu ✓': 'Connected ✓',
+  'Cihazlar değiştirildi.': 'Devices switched.',
+  'Ekran paylaşım isteği gönderildi...': 'Screen share request sent...',
+  'Ekran paylaşımı başladı.': 'Screen sharing started.',
+  'Ekran paylaşımı iptal edildi.': 'Screen sharing canceled.',
+  'Ekran paylaşımı onaylandı!': 'Screen share approved!',
+  'Ekran paylaşımı reddedildi.': 'Screen share denied.',
+  'El kaldırdın — host görebilir.': 'You raised your hand — the host can see it.',
+  'En az 2 seçenek gerekli.': 'At least 2 options required.',
+  'Host kameranızı kapattı.': 'The host turned off your camera.',
+  'Host kameranızı kilitledi.': 'The host locked your camera.',
+  'Host mikrofonunuzu kilitledi.': 'The host locked your microphone.',
+  'Host odayı kapattı.': 'The host closed the room.',
+  'Host sizi susturdu.': 'The host muted you.',
+  'Kamera kapatma gönderildi.': 'Camera-off sent.',
+  'Kamera/mikrofon erişimi yok.': 'No camera/microphone access.',
+  'Kaydedilecek medya yok.': 'No media to record.',
+  'Kayıt başladı.': 'Recording started.',
+  'Kayıt indirildi.': 'Recording downloaded.',
+  'Soru boş olamaz.': 'Question cannot be empty.',
+  'Susturma gönderildi.': 'Mute sent.',
+  'Tahta temizlendi.': 'Board cleared.',
+  'Tahta tüm kullanıcılar için temizlendi.': 'Board cleared for everyone.',
+  'İstek reddedildi.': 'Request denied.',
+  '🗳️ Yeni anket başladı!': '🗳️ New poll started!',
+  'Kamera kilitlendi.': 'Camera locked.',
+  'Kilit açıldı.': 'Unlocked.',
+  'Mikrofon kilitlendi.': 'Microphone locked.',
+  'Cihaz değiştirilemedi: ': 'Could not switch device: ',
+  'Kamera açılamadı: ': 'Could not open camera: ',
+  'Oda kodu kopyalandı: ': 'Room code copied: ',
+  'Kod en az 3 karakter olmalı.': 'Code must be at least 3 characters.',
+  'Geçersiz kod.': 'Invalid code.',
+  'Oda bulunamadı.': 'Room not found.',
+  'Bu kullanıcı adı alınmış.': 'This username is taken.',
+  'Kullanıcı adı en az 3 karakter olmalı.': 'Username must be at least 3 characters.',
+  'Sadece harf, rakam ve _ kullanabilirsin.': 'Only letters, numbers and _ are allowed.',
+  'Şifre en az 6 karakter olmalı.': 'Password must be at least 6 characters.',
+  'Bu kullanıcı adı zaten kayıtlı.': 'This username is already registered.',
+  'Tüm alanları doldur.': 'Fill in all fields.',
+  'Kullanıcı adı veya şifre hatalı.': 'Incorrect username or password.',
+  'En az 3 karakter olmalı.': 'Must be at least 3 characters.',
+  'Sadece harf, rakam ve _ kullanılabilir.': 'Only letters, numbers and _ allowed.',
+  'Aynı kullanıcı adı.': 'Same username.',
+  'Kullanıcı adı güncellendi!': 'Username updated!',
+  'Yeni şifre en az 6 karakter.': 'New password must be at least 6 characters.',
+  'Şifreler eşleşmiyor.': 'Passwords do not match.',
+  'Şifre başarıyla güncellendi!': 'Password updated successfully!',
+  '🔒 Bu oda şifreli — şifreyi girin.': '🔒 This room is password-protected — enter the password.',
+  'Şifre yanlış.': 'Incorrect password.',
+  'Mikrofon': 'Mic', 'Sessiz': 'Muted',
+  'Kamera': 'Camera', 'Kapalı': 'Off',
+  'Durdur': 'Stop', 'Ekran': 'Screen',
+  'Kapat': 'Close', 'Tahta': 'Board',
+  'El İndir': 'Lower Hand', 'El Kaldır': 'Raise Hand',
+  '📌 Sabitle': '📌 Pin',
+  '⚠ Kısıtlı': '⚠ Restricted',
+  'Katılımcı': 'Participant',
+  'Kilit Aç': 'Unlock',
+  'Kamera Kilidini Aç': 'Unlock Camera',
+  'Kamerayı Kilitle': 'Lock Camera',
+  'Odada başka kimse yok.': 'No one else is in the room.',
+};
+
+function t(str) {
+  return currentLang === 'en' ? (DYNAMIC_EN[str] || str) : str;
+}
+
+function applyStaticI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const entry = STATIC_I18N[el.dataset.i18n];
+    if (entry) el.textContent = entry[currentLang];
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const entry = STATIC_I18N[el.dataset.i18nPh];
+    if (entry) el.placeholder = entry[currentLang];
+  });
+  document.querySelectorAll('.lang-toggle').forEach(btn => {
+    btn.textContent = currentLang === 'en' ? 'TR' : 'EN';
+  });
+}
+
+window.toggleLang = function() {
+  currentLang = currentLang === 'en' ? 'tr' : 'en';
+  localStorage.setItem('solikez_lang', currentLang);
+  applyStaticI18n();
+};
+
+document.addEventListener('DOMContentLoaded', applyStaticI18n);
+applyStaticI18n();
 
 // ══════════════════════════════════════════════════════
 //  STATE
@@ -1311,19 +1494,19 @@ function showScreen(id) {
 }
 function showError(msg) {
   const el = document.getElementById('authError');
-  el.textContent = msg; el.style.display = 'block';
+  el.textContent = t(msg); el.style.display = 'block';
 }
 function clearError() { document.getElementById('authError').style.display = 'none'; }
 function showToast(msg, dur=2800) {
-  const t = document.createElement('div');
-  t.className = 'toast'; t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), dur);
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = t(msg);
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), dur);
 }
 function setLoading(id, loading, label) {
   const b = document.getElementById(id);
   b.disabled = loading;
-  b.innerHTML = loading ? `<span class="loading-spinner"></span> ${label}...` : label;
+  b.innerHTML = loading ? `<span class="loading-spinner"></span> ${t(label)}...` : t(label);
 }
 function uidColor(uid) {
   const cols = ['#6c63ff','#22d3a0','#f59e0b','#ec4899','#3b82f6','#10b981'];
@@ -1425,7 +1608,7 @@ window.createRoom = async function() {
 
   // Özel kod validasyon
   if (customCode) {
-    if (customCode.length < 3) { errEl.textContent = 'Kod en az 3 karakter olmalı.'; return; }
+    if (customCode.length < 3) { errEl.textContent = t('Kod en az 3 karakter olmalı.'); return; }
     // Dolu mu kontrol et
     const existing = await get(ref(db, `rooms/${code}`));
     if (existing.exists()) { errEl.textContent = `"${code}" kodu zaten kullanımda.`; return; }
@@ -1448,9 +1631,9 @@ window.createRoom = async function() {
 window.joinRoom = async function() {
   const code = (devicePickerCode || document.getElementById('joinCodeInput').value.trim()).toUpperCase();
   document.getElementById('joinError').textContent = '';
-  if (!code || code.length < 3) { document.getElementById('joinError').textContent = 'Geçersiz kod.'; return; }
+  if (!code || code.length < 3) { document.getElementById('joinError').textContent = t('Geçersiz kod.'); return; }
   const snap = await get(ref(db, `rooms/${code}`));
-  if (!snap.exists()) { document.getElementById('joinError').textContent = 'Oda bulunamadı.'; return; }
+  if (!snap.exists()) { document.getElementById('joinError').textContent = t('Oda bulunamadı.'); return; }
 
   const roomData = snap.val();
 
@@ -1494,7 +1677,13 @@ async function enterRoom(code, asHost) {
 
   // Firebase cleanup on disconnect
   onDisconnect(ref(db, `rooms/${code}/participants/${currentUser.uid}`)).remove();
-  onDisconnect(ref(db, `sig/${code}/${currentUser.uid}`)).remove();
+  onDisconnect(ref(db, `rooms/${code}/rtc/${currentUser.uid}`)).remove();
+  onDisconnect(ref(db, `rooms/${code}/controls/${currentUser.uid}`)).remove();
+
+  // Önceki oturumdan kalan offer/answer/ICE verisi yeni oturumda tekrar
+  // oynatılıp bağlantıyı bozuyordu — dinleyiciler bağlanmadan önce temizle
+  await remove(ref(db, `rooms/${code}/rtc/${currentUser.uid}`)).catch(()=>{});
+  processedOffers.clear();
 
   // Get local media with selected devices
   try {
@@ -1520,6 +1709,8 @@ async function enterRoom(code, asHost) {
   listenPoll(code);
   startSpeakerDetection();
   startQualityMonitor();
+  startRtcWatchdog(code);
+  publishMyState();
   if (isHost) setTimeout(showHostWbControls, 100);
 
   // Host odayı silerse katılımcıları çıkar
@@ -1673,17 +1864,20 @@ function updateSpotlightContent(uid) {
   if (!srcTile) return;
 
   const srcVideo = srcTile.querySelector('video');
-  if (srcVideo && srcVideo.srcObject) {
+  const hasLiveVideo = srcVideo && srcVideo.srcObject &&
+    srcVideo.srcObject.getVideoTracks().some(vt => vt.readyState === 'live' && !vt.muted);
+  if (hasLiveVideo) {
     let v = content.querySelector('video');
     if (!v) {
       content.innerHTML = '';
       v = document.createElement('video');
       v.autoplay = true;
       v.playsInline = true;
-      if (uid === currentUser.uid) v.muted = true;
+      // Ses her zaman tile'daki elemandan gelir; burada açık bırakmak çift ses/yankı yapıyordu
+      v.muted = true;
       content.appendChild(v);
     }
-    if (v.srcObject !== srcVideo.srcObject) v.srcObject = srcVideo.srcObject;
+    if (v.srcObject !== srcVideo.srcObject) { v.srcObject = srcVideo.srcObject; v.play().catch(()=>{}); }
   } else {
     // Show avatar
     let av = content.querySelector('.tile-avatar');
@@ -1728,7 +1922,7 @@ function renderMyTile() {
   const sb = document.createElement('div'); sb.className = 'speak-bar';
   tile.appendChild(sb);
   const pb = document.createElement('button'); pb.className = 'pin-btn';
-  pb.textContent = '📌 Sabitle';
+  pb.textContent = t('📌 Sabitle');
   pb.onclick = (e) => { e.stopPropagation(); pinTile(currentUser.uid); };
   tile.appendChild(pb);
   const ov = document.createElement('div'); ov.className = 'tile-overlay';
@@ -1763,7 +1957,7 @@ function getOrCreateRemoteTile(uid, username) {
   const sb = document.createElement('div'); sb.className = 'speak-bar';
   tile.appendChild(sb);
   const pb = document.createElement('button'); pb.className = 'pin-btn';
-  pb.textContent = '📌 Sabitle';
+  pb.textContent = t('📌 Sabitle');
   pb.onclick = (e) => { e.stopPropagation(); pinTile(uid); };
   tile.appendChild(pb);
   const ov = document.createElement('div'); ov.className = 'tile-overlay';
@@ -1782,15 +1976,61 @@ function getOrCreateRemoteTile(uid, username) {
 function attachRemoteStream(uid, stream) {
   const tile = document.getElementById(`tile-${uid}`);
   if (!tile) return;
-  // Remove avatar if present
-  tile.querySelectorAll('.tile-avatar').forEach(a => a.remove());
   let v = tile.querySelector('video');
   if (!v) {
     v = document.createElement('video');
     v.autoplay = true; v.playsInline = true;
+    v.setAttribute('playsinline', '');
     tile.prepend(v);
   }
-  v.srcObject = stream;
+  // Aynı stream'i tekrar atamak oynatmayı sıfırlayıp donmaya yol açıyor
+  if (v.srcObject !== stream) v.srcObject = stream;
+  playMediaElement(v);
+}
+
+// Autoplay politikası sesli medyayı bloklayabilir — sessizce başarısız olursa
+// ses hiç duyulmuyordu; ilk kullanıcı dokunuşunda hepsini yeniden başlat
+function playMediaElement(el) {
+  const p = el.play();
+  if (p && p.catch) p.catch(() => armAudioUnlock());
+}
+
+function armAudioUnlock() {
+  if (audioUnlockArmed) return;
+  audioUnlockArmed = true;
+  showToast(t('Sesi başlatmak için ekrana dokun'), 6000);
+  const unlock = () => {
+    audioUnlockArmed = false;
+    document.removeEventListener('click', unlock);
+    document.removeEventListener('touchstart', unlock);
+    document.querySelectorAll('video').forEach(v => v.play().catch(()=>{}));
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(()=>{});
+  };
+  document.addEventListener('click', unlock);
+  document.addEventListener('touchstart', unlock);
+}
+
+// Video track'i sustuğunda <video> elemanını silmek yerine gizle:
+// silmek konuşmacı tespitini ve stream referansını bozuyordu
+function refreshRemoteTile(uid) {
+  const ps = peerStates[uid];
+  const tile = document.getElementById(`tile-${uid}`);
+  if (!tile || !ps) return;
+  const hasVideo = ps.remoteStream.getVideoTracks()
+    .some(vt => vt.readyState === 'live' && !vt.muted);
+  const v = tile.querySelector('video');
+  if (v) v.style.display = hasVideo ? '' : 'none';
+  let av = tile.querySelector('.tile-avatar');
+  if (!hasVideo && !av) {
+    av = document.createElement('div');
+    av.className = 'tile-avatar';
+    av.textContent = initials(knownParticipants[uid]?.username || uid.slice(0,6));
+    tile.prepend(av);
+  } else if (hasVideo && av) {
+    av.remove();
+  }
+  const camBadge = document.getElementById(`cam-${uid}`);
+  if (camBadge) camBadge.textContent = hasVideo ? '📷' : '📵';
 }
 
 function removeRemoteTile(uid) {
@@ -1812,9 +2052,20 @@ function listenParticipants(code) {
       if (!knownParticipants[uid]) {
         knownParticipants[uid] = info;
         getOrCreateRemoteTile(uid, info.username);
-        // Her iki taraf da offer atar — glare olursa küçük UID kazanır
-        console.log(`[RTC] offer atıyorum → ${uid.slice(0,6)}`);
-        await sendOffer(code, uid);
+        attachPeerSignalListeners(code, uid);
+        ensurePeer(code, uid);
+      }
+    }
+
+    // Rozetler her snapshot'ta tazelenir — eskiden sadece yeni katılımcı işleniyordu
+    for (const [uid, info] of Object.entries(data)) {
+      if (uid === currentUser.uid) continue;
+      knownParticipants[uid] = info;
+      const micBadge = document.getElementById(`mic-${uid}`);
+      if (micBadge) {
+        const on = info.micOn !== false;
+        micBadge.textContent = on ? '🎤' : '🔇';
+        micBadge.classList.toggle('muted', !on);
       }
     }
 
@@ -1833,238 +2084,266 @@ function listenParticipants(code) {
 }
 
 // ══════════════════════════════════════════════════════
-//  WebRTC — temiz yeniden yazım
-//  Path: /rooms/{code}/rtc/{alıcıUid}/{gönderenUid}/{type}
-//  type: offer | answer | ice-{pushKey}
-//  Küçük UID offer atar, büyük UID answer atar.
+//  WebRTC — Perfect Negotiation
+//  Path: /rooms/{code}/rtc/{alıcıUid}/{gönderenUid}/{offer|answer|ice}
+//  Her peer kurulurken sabit sırada audio+video transceiver açılır.
+//  Kamera aç/kapa, ekran paylaşımı ve cihaz değişimi sadece
+//  replaceTrack ile yapılır — SDP renegotiation gerekmez.
 // ══════════════════════════════════════════════════════
 
-// peerStates yukarıda tanımlandı — { pc, iceBuf[], hasRemote }
-
-const rtcListeners = {}; // uid → unsubscribe fn
+const rtcListeners = {};   // uid → true
+const rtcUnsubs    = {};   // uid → [unsubscribe fn]
+const sigQueue     = {};   // uid → Promise zinciri (sinyalleri sıraya sokar)
+let rtcWatchdogId  = null;
+let audioUnlockArmed = false;
 
 function rtcPath(toUid, fromUid, type) {
   return ref(db, `rooms/${currentRoom}/rtc/${toUid}/${fromUid}/${type}`);
 }
 
-async function sendOffer(code, remoteUid) {
-  if (peerStates[remoteUid]?.pc?.connectionState === 'connected') return;
-  const pc = buildPeer(code, remoteUid);
-  try {
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-    // offer'ı karşıya yaz
-    await set(ref(db, `rooms/${code}/rtc/${remoteUid}/${currentUser.uid}/offer`), {
-      sdp: offer.sdp, ts: Date.now()
-    });
-    console.log(`[RTC] offer → ${remoteUid.slice(0,6)}`);
-  } catch(e) { console.error('[RTC] sendOffer:', e); }
+// ── Giden track seçimi ────────────────────────────────
+function outboundVideoTrack() {
+  if (screenOn && screenStream) {
+    const st = screenStream.getVideoTracks()[0];
+    if (st && st.readyState === 'live') return st;
+  }
+  if (camOn && localStream) {
+    return localStream.getVideoTracks().find(vt => vt.readyState === 'live') || null;
+  }
+  return null;
 }
 
-function listenSignals(code) {
-  const myRtcRef = ref(db, `rooms/${code}/rtc/${currentUser.uid}`);
+function outboundAudioTrack() {
+  if (!localStream) return null;
+  return localStream.getAudioTracks().find(at => at.readyState === 'live') || null;
+}
 
-  onChildAdded(myRtcRef, async (senderSnap) => {
+// Kamera/ekran/cihaz değişiminde tek giriş noktası
+function applyOutboundTracks() {
+  const vt = outboundVideoTrack();
+  const at = outboundAudioTrack();
+  for (const [uid, ps] of Object.entries(peerStates)) {
+    if (!ps.pc || ps.pc.signalingState === 'closed') continue;
+    ps.audioTx?.sender.replaceTrack(at).catch(e => console.warn(`[RTC] audio replace ${uid.slice(0,6)}:`, e));
+    ps.videoTx?.sender.replaceTrack(vt).catch(e => console.warn(`[RTC] video replace ${uid.slice(0,6)}:`, e));
+  }
+  console.log(`[RTC] outbound → audio:${at ? 'var' : 'yok'} video:${vt ? 'var' : 'yok'}`);
+}
+
+// ── Peer kurulumu ─────────────────────────────────────
+function ensurePeer(code, remoteUid) {
+  const ps = peerStates[remoteUid];
+  if (ps?.pc && ps.pc.signalingState !== 'closed') return ps;
+  return buildPeer(code, remoteUid);
+}
+
+function buildPeer(code, remoteUid) {
+  peerStates[remoteUid]?.pc?.close();
+
+  const pc = new RTCPeerConnection(ICE_SERVERS);
+  const ps = {
+    pc,
+    polite: currentUser.uid > remoteUid,   // büyük UID nazik taraf, çakışmada geri çekilir
+    makingOffer: false,
+    ignoreOffer: false,
+    isSettingRemoteAnswerPending: false,
+    iceBuf: [],
+    remoteStream: new MediaStream(),
+    audioTx: null,
+    videoTx: null,
+    createdAt: Date.now(),
+    lastGood: Date.now()
+  };
+  peerStates[remoteUid] = ps;
+  peerConnections[remoteUid] = pc;
+  delete analyserNodes[remoteUid];   // eski stream'e bağlı analyser konuşmacı tespitini dondurur
+
+  // m-line sırası iki tarafta da sabit: audio, sonra video
+  ps.audioTx = pc.addTransceiver('audio', { direction: 'sendrecv' });
+  ps.videoTx = pc.addTransceiver('video', { direction: 'sendrecv' });
+  ps.audioTx.sender.replaceTrack(outboundAudioTrack()).catch(()=>{});
+  ps.videoTx.sender.replaceTrack(outboundVideoTrack()).catch(()=>{});
+
+  // Kuyruğa alınmaz: RTCPeerConnection'ın kendi operations chain'i sıralamayı
+  // zaten garanti eder; kuyruğa almak her seferinde fazladan bir SDP turu doğuruyordu
+  pc.onnegotiationneeded = async () => {
+    if (pc.signalingState === 'closed') return;
+    try {
+      ps.makingOffer = true;
+      await pc.setLocalDescription();
+      if (pc.signalingState === 'closed' || !pc.localDescription) return;
+      await set(ref(db, `rooms/${code}/rtc/${remoteUid}/${currentUser.uid}/offer`), {
+        sdp: pc.localDescription.sdp, ts: Date.now()
+      });
+      console.log(`[RTC] offer → ${remoteUid.slice(0,6)}`);
+    } catch(e) { console.error('[RTC] negotiationneeded:', e); }
+    finally { ps.makingOffer = false; }
+  };
+
+  pc.onicecandidate = ({ candidate }) => {
+    if (!candidate) return;
+    push(ref(db, `rooms/${code}/rtc/${remoteUid}/${currentUser.uid}/ice`), candidate.toJSON());
+  };
+
+  pc.ontrack = ({ track }) => {
+    console.log(`[RTC] ontrack ← ${remoteUid.slice(0,6)} ${track.kind}`);
+    if (!ps.remoteStream.getTrackById(track.id)) ps.remoteStream.addTrack(track);
+    track.onmute   = () => refreshRemoteTile(remoteUid);
+    track.onunmute = () => refreshRemoteTile(remoteUid);
+    track.onended  = () => { ps.remoteStream.removeTrack(track); refreshRemoteTile(remoteUid); };
+    getOrCreateRemoteTile(remoteUid, knownParticipants[remoteUid]?.username || remoteUid.slice(0,6));
+    attachRemoteStream(remoteUid, ps.remoteStream);
+    refreshRemoteTile(remoteUid);
+  };
+
+  pc.onconnectionstatechange = () => {
+    const st = pc.connectionState;
+    console.log(`[RTC] conn ${remoteUid.slice(0,6)} = ${st}`);
+    if (st === 'connected') {
+      ps.lastGood = Date.now();
+      attachRemoteStream(remoteUid, ps.remoteStream);
+      refreshRemoteTile(remoteUid);
+    }
+    // 'failed'/'disconnected' iyileştirmesi watchdog'da — peer'ı burada yıkma,
+    // yıkmak karşı tarafı geçersiz bir renegotiation'a sokup kalıcı donmaya yol açıyordu
+  };
+
+  pc.oniceconnectionstatechange = () => {
+    if (pc.iceConnectionState === 'failed') {
+      try { pc.restartIce(); } catch(e) {}
+    }
+  };
+
+  return ps;
+}
+
+// ── Sinyal dinleyicileri ──────────────────────────────
+function listenSignals(code) {
+  onChildAdded(ref(db, `rooms/${code}/rtc/${currentUser.uid}`), (senderSnap) => {
     const fromUid = senderSnap.key;
     if (fromUid === currentUser.uid) return;
-    if (rtcListeners[fromUid]) return;
-    rtcListeners[fromUid] = true;
+    attachPeerSignalListeners(code, fromUid);
+  });
+}
 
-    const fromRef = senderSnap.ref;
+function attachPeerSignalListeners(code, fromUid) {
+  if (rtcUnsubs[fromUid]) return;
+  rtcListeners[fromUid] = true;
+  const base = `rooms/${code}/rtc/${currentUser.uid}/${fromUid}`;
+  rtcUnsubs[fromUid] = [
+    onValue(ref(db, `${base}/offer`), (snap) => {
+      const d = snap.val();
+      if (d?.sdp) handleDescription(code, fromUid, 'offer', d);
+    }),
+    onValue(ref(db, `${base}/answer`), (snap) => {
+      const d = snap.val();
+      if (d?.sdp) handleDescription(code, fromUid, 'answer', d);
+    }),
+    onChildAdded(ref(db, `${base}/ice`), (snap) => {
+      const c = snap.val();
+      if (c?.candidate) handleCandidate(code, fromUid, c);
+    })
+  ];
+}
 
-    // OFFER — onValue ile dinle (SDP büyük, push değil set)
-    onValue(ref(db, `rooms/${code}/rtc/${currentUser.uid}/${fromUid}/offer`), async (snap) => {
-      if (!snap.exists()) return;
-      const data = snap.val();
-      if (!data?.sdp) return;
+function enqueueSignal(uid, fn) {
+  sigQueue[uid] = (sigQueue[uid] || Promise.resolve())
+    .then(fn)
+    .catch(e => console.error(`[RTC] sinyal kuyruğu ${uid.slice(0,6)}:`, e));
+  return sigQueue[uid];
+}
 
-      const key = `${fromUid}-offer-${data.ts}`;
-      if (processedOffers.has(key)) return;
-      processedOffers.add(key);
+function handleDescription(code, fromUid, type, data) {
+  const key = `${fromUid}-${type}-${data.ts}`;
+  if (processedOffers.has(key)) return;
+  processedOffers.add(key);
 
-      // Eğer peer zaten bağlıysa bu bir renegotiation offer'ıdır (replaceTrack sonrası)
-      const ps = peerStates[fromUid];
-      if (ps?.pc && ps.pc.connectionState === 'connected' && ps.pc.signalingState === 'stable') {
-        console.log(`[RTC] renegotiation offer ← ${fromUid.slice(0,6)}`);
-        try {
-          await ps.pc.setRemoteDescription({ type: 'offer', sdp: data.sdp });
-          const ans = await ps.pc.createAnswer();
-          await ps.pc.setLocalDescription(ans);
-          await set(ref(db, `rooms/${code}/rtc/${fromUid}/${currentUser.uid}/answer`), {
-            sdp: ans.sdp, ts: Date.now()
-          });
-          console.log(`[RTC] renegotiation answer → ${fromUid.slice(0,6)}`);
-        } catch(e) { console.error('[RTC] renegotiation handleOffer:', e); }
-        return;
-      }
+  enqueueSignal(fromUid, async () => {
+    const ps = ensurePeer(code, fromUid);
+    const pc = ps.pc;
+    if (pc.signalingState === 'closed') return;
 
-      // Glare: ikimiz de offer attıysak küçük UID kazanır
-      if (ps?.pc?.signalingState === 'have-local-offer') {
-        if (currentUser.uid < fromUid) {
-          console.log(`[RTC] Glare: biz kazandık (${currentUser.uid.slice(0,4)} < ${fromUid.slice(0,4)})`);
-          return;
-        }
-        console.log(`[RTC] Glare: geri çekiliyoruz`);
-        ps.pc.close();
-        delete peerStates[fromUid];
-        delete peerConnections[fromUid];
-      }
+    const readyForOffer = !ps.makingOffer &&
+      (pc.signalingState === 'stable' || ps.isSettingRemoteAnswerPending);
+    const offerCollision = (type === 'offer') && !readyForOffer;
 
-      console.log(`[RTC] offer ← ${fromUid.slice(0,6)}`);
-      const pc = buildPeer(code, fromUid);
-      try {
-        await pc.setRemoteDescription({ type: 'offer', sdp: data.sdp });
-        peerStates[fromUid].hasRemote = true;
-        await flushIce(fromUid);
-        const answer = await pc.createAnswer();
-        await pc.setLocalDescription(answer);
-        await set(ref(db, `rooms/${code}/rtc/${fromUid}/${currentUser.uid}/answer`), {
-          sdp: answer.sdp, ts: Date.now()
-        });
-        console.log(`[RTC] answer → ${fromUid.slice(0,6)}`);
-      } catch(e) { console.error('[RTC] handleOffer:', e); }
-    });
+    ps.ignoreOffer = !ps.polite && offerCollision;
+    if (ps.ignoreOffer) {
+      console.log(`[RTC] çakışma — offer yok sayıldı ← ${fromUid.slice(0,6)}`);
+      return;
+    }
+    if (type === 'answer' && pc.signalingState !== 'have-local-offer') return;
 
-    // ANSWER — onValue ile dinle (initial + renegotiation)
-    onValue(ref(db, `rooms/${code}/rtc/${currentUser.uid}/${fromUid}/answer`), async (snap) => {
-      if (!snap.exists()) return;
-      const data = snap.val();
-      if (!data?.sdp) return;
-      const ps = peerStates[fromUid];
-      if (!ps?.pc) return;
-      // Sadece have-local-offer durumunda işle (initial veya renegotiation)
-      if (ps.pc.signalingState !== 'have-local-offer') return;
-      try {
-        await ps.pc.setRemoteDescription({ type: 'answer', sdp: data.sdp });
-        if (!ps.hasRemote) {
-          ps.hasRemote = true;
-          console.log(`[RTC] answer set ← ${fromUid.slice(0,6)}, buf=${ps.iceBuf.length}`);
-          await flushIce(fromUid);
-        } else {
-          console.log(`[RTC] renegotiation answer set ← ${fromUid.slice(0,6)}`);
-        }
-      } catch(e) { console.error('[RTC] setAnswer:', e); }
-    });
+    try {
+      ps.isSettingRemoteAnswerPending = (type === 'answer');
+      await pc.setRemoteDescription({ type, sdp: data.sdp });
+    } finally {
+      ps.isSettingRemoteAnswerPending = false;
+    }
 
-    // ICE — onChildAdded ile her candidate ayrı gelir, tekrar gelmez
-    onChildAdded(ref(db, `rooms/${code}/rtc/${currentUser.uid}/${fromUid}/ice`), async (iceSnap) => {
-      const c = iceSnap.val();
-      if (!c?.candidate) return;
-      const ps = peerStates[fromUid];
-      if (!ps) return;
-      if (ps.hasRemote) {
-        try { await ps.pc.addIceCandidate(new RTCIceCandidate(c)); }
-        catch(e) { console.warn('[RTC] addIce err:', e); }
-      } else {
-        ps.iceBuf.push(c);
-        console.log(`[RTC] ICE buffer ← ${fromUid.slice(0,6)} (buf:${ps.iceBuf.length})`);
-      }
-    });
+    await flushIce(fromUid);
+
+    if (type === 'offer') {
+      await pc.setLocalDescription();
+      await set(ref(db, `rooms/${code}/rtc/${fromUid}/${currentUser.uid}/answer`), {
+        sdp: pc.localDescription.sdp, ts: Date.now()
+      });
+      console.log(`[RTC] answer → ${fromUid.slice(0,6)}`);
+    }
+  });
+}
+
+function handleCandidate(code, fromUid, c) {
+  enqueueSignal(fromUid, async () => {
+    const ps = peerStates[fromUid];
+    if (!ps?.pc || ps.pc.signalingState === 'closed') return;
+    if (!ps.pc.remoteDescription) { ps.iceBuf.push(c); return; }
+    try { await ps.pc.addIceCandidate(new RTCIceCandidate(c)); }
+    catch(e) { if (!ps.ignoreOffer) console.warn('[RTC] addIce:', e); }
   });
 }
 
 async function flushIce(uid) {
   const ps = peerStates[uid];
   if (!ps?.iceBuf?.length) return;
-  const buf = [...ps.iceBuf];
+  const buf = ps.iceBuf;
   ps.iceBuf = [];
   for (const c of buf) {
     try { await ps.pc.addIceCandidate(new RTCIceCandidate(c)); } catch(e) {}
   }
 }
 
-function buildPeer(code, remoteUid) {
-  if (peerStates[remoteUid]?.pc) peerStates[remoteUid].pc.close();
-
-  const pc = new RTCPeerConnection(ICE_SERVERS);
-  peerStates[remoteUid] = { pc, iceBuf: [], hasRemote: false };
-  peerConnections[remoteUid] = pc;
-
-  // Local track'leri ekle — ekran paylaşımı aktifse video track olarak screenStream kullan
-  if (localStream) {
-    if (screenOn && screenStream) {
-      localStream.getAudioTracks().forEach(t => pc.addTrack(t, localStream));
-      screenStream.getVideoTracks().forEach(t => pc.addTrack(t, screenStream));
-      console.log(`[RTC] tracks eklendi (audio:${localStream.getAudioTracks().length}, screen-video:${screenStream.getVideoTracks().length})`);
-    } else {
-      localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
-      console.log(`[RTC] ${localStream.getTracks().length} track eklendi (${localStream.getTracks().map(t=>t.kind).join(',')})`);
+// ── Watchdog: kopan/kurulamayan bağlantıları kendi kendine toparlar ──
+function startRtcWatchdog(code) {
+  if (rtcWatchdogId) return;
+  rtcWatchdogId = setInterval(() => {
+    if (!currentRoom) return;
+    for (const uid of Object.keys(knownParticipants)) {
+      const ps = peerStates[uid];
+      if (!ps?.pc || ps.pc.signalingState === 'closed') {
+        console.log(`[RTC] watchdog: peer yok → kuruluyor ${uid.slice(0,6)}`);
+        attachPeerSignalListeners(code, uid);
+        ensurePeer(code, uid);
+        continue;
+      }
+      const st = ps.pc.connectionState;
+      if (st === 'connected') { ps.lastGood = Date.now(); continue; }
+      if (st === 'failed' || (st === 'disconnected' && Date.now() - ps.lastGood > 6000)) {
+        console.log(`[RTC] watchdog: ${uid.slice(0,6)} ${st} → ICE restart`);
+        try { ps.pc.restartIce(); } catch(e) {}
+        ps.lastGood = Date.now();
+        continue;
+      }
+      if ((st === 'new' || st === 'connecting') && Date.now() - ps.createdAt > 20000) {
+        console.log(`[RTC] watchdog: ${uid.slice(0,6)} ${st} 20sn+ → peer yeniden kuruluyor`);
+        buildPeer(code, uid);
+      }
     }
-  } else {
-    console.warn('[RTC] localStream YOK — track eklenemedi!');
-  }
+  }, 4000);
+}
 
-  // ICE candidate → Firebase
-  pc.onicecandidate = ({ candidate }) => {
-    if (!candidate) {
-      console.log(`[RTC] ICE gathering tamamlandı → ${remoteUid.slice(0,6)}`);
-      return;
-    }
-    console.log(`[RTC] ICE gönderiliyor → ${remoteUid.slice(0,6)} (${candidate.type})`);
-    push(ref(db, `rooms/${code}/rtc/${remoteUid}/${currentUser.uid}/ice`), candidate.toJSON());
-  };
-
-  // Remote track → tile (duplicate kontrolü ile)
-  const remoteStream = new MediaStream();
-  pc.ontrack = ({ track }) => {
-    console.log(`[RTC] ontrack ← ${remoteUid.slice(0,6)} ${track.kind} readyState=${track.readyState}`);
-    if (!remoteStream.getTrackById(track.id)) {
-      remoteStream.addTrack(track);
-    }
-    const info = knownParticipants[remoteUid];
-    getOrCreateRemoteTile(remoteUid, info?.username || remoteUid.slice(0,6));
-    attachRemoteStream(remoteUid, remoteStream);
-
-    if (track.kind === 'video') {
-      // Karşı taraf kamerayı kapatınca profil fotosu göster
-      track.onmute = () => {
-        const tile = document.getElementById(`tile-${remoteUid}`);
-        if (!tile) return;
-        tile.querySelectorAll('video').forEach(v => v.remove());
-        if (!tile.querySelector('.tile-avatar')) {
-          const av = document.createElement('div');
-          av.className = 'tile-avatar';
-          av.textContent = initials(knownParticipants[remoteUid]?.username || remoteUid.slice(0,6));
-          tile.prepend(av);
-        }
-        const camBadge = document.getElementById(`cam-${remoteUid}`);
-        if (camBadge) camBadge.textContent = '📵';
-      };
-      // Karşı taraf kamerayı açınca tekrar video göster
-      track.onunmute = () => {
-        const tile = document.getElementById(`tile-${remoteUid}`);
-        if (!tile) return;
-        tile.querySelectorAll('.tile-avatar').forEach(a => a.remove());
-        let v = tile.querySelector('video');
-        if (!v) {
-          v = document.createElement('video');
-          v.autoplay = true; v.playsInline = true;
-          tile.prepend(v);
-        }
-        v.srcObject = remoteStream;
-        const camBadge = document.getElementById(`cam-${remoteUid}`);
-        if (camBadge) camBadge.textContent = '📷';
-      };
-    }
-  };
-
-  pc.onconnectionstatechange = () => {
-    console.log(`[RTC] conn ${remoteUid.slice(0,6)} = ${pc.connectionState}`);
-    if (pc.connectionState === 'connected') showToast('Bağlantı kuruldu ✓');
-    if (pc.connectionState === 'failed') {
-      delete peerStates[remoteUid]; delete peerConnections[remoteUid];
-      showToast('Bağlantı koptu, yeniden deneniyor...');
-      setTimeout(() => {
-        if (knownParticipants[remoteUid]) sendOffer(code, remoteUid);
-      }, 2000);
-    }
-  };
-
-  pc.oniceconnectionstatechange = () => {
-    console.log(`[RTC] ICE conn ${remoteUid.slice(0,6)} = ${pc.iceConnectionState}`);
-  };
-
-  return pc;
+function stopRtcWatchdog() {
+  if (rtcWatchdogId) { clearInterval(rtcWatchdogId); rtcWatchdogId = null; }
 }
 
 function closePeer(uid) {
@@ -2072,8 +2351,19 @@ function closePeer(uid) {
   delete peerStates[uid];
   delete peerConnections[uid];
   delete rtcListeners[uid];
+  delete sigQueue[uid];
+  (rtcUnsubs[uid] || []).forEach(fn => { try { fn(); } catch(e) {} });
+  delete rtcUnsubs[uid];
   if (currentRoom)
     remove(ref(db, `rooms/${currentRoom}/rtc/${currentUser.uid}/${uid}`)).catch(()=>{});
+}
+
+// Mikrofon/kamera durumu karşı taraftaki rozetlere yansısın
+function publishMyState() {
+  if (!currentRoom || !currentUser) return;
+  update(ref(db, `rooms/${currentRoom}/participants/${currentUser.uid}`), {
+    micOn, camOn, screenOn
+  }).catch(()=>{});
 }
 
 // ══════════════════════════════════════════════════════
@@ -2117,9 +2407,10 @@ window.toggleMic = function() {
   tracks.forEach(t => t.enabled = micOn);
   const btn = document.getElementById('micBtn');
   btn.classList.toggle('off', !micOn);
-  btn.innerHTML = `${micOn?'🎤':'🔇'} <span class="ctrl-label">${micOn?'Mikrofon':'Sessiz'}</span>`;
+  btn.innerHTML = `${micOn?'🎤':'🔇'} <span class="ctrl-label">${t(micOn?'Mikrofon':'Sessiz')}</span>`;
   const badge = document.getElementById('myMicBadge');
   if (badge) { badge.textContent = micOn?'🎤':'🔇'; badge.classList.toggle('muted',!micOn); }
+  publishMyState();
 };
 
 window.toggleCam = async function() {
@@ -2127,67 +2418,35 @@ window.toggleCam = async function() {
   camOn = !camOn;
   const btn = document.getElementById('camBtn');
   btn.classList.toggle('off', !camOn);
-  btn.innerHTML = `${camOn?'📷':'📵'} <span class="ctrl-label">${camOn?'Kamera':'Kapalı'}</span>`;
+  btn.innerHTML = `${camOn?'📷':'📵'} <span class="ctrl-label">${t(camOn?'Kamera':'Kapalı')}</span>`;
 
   if (!camOn) {
-    localStream.getVideoTracks().forEach(t => t.stop());
-    // Ekran paylaşımı aktifken peer track'lerine dokunma
-    if (!screenOn) {
-      for (const pc of Object.values(peerConnections)) {
-        const sender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
-        if (sender) sender.replaceTrack(null).catch(()=>{});
-      }
-    }
+    // Ölü track localStream'de kalırsa sonradan katılanlara boş video m-line gidiyordu
+    localStream.getVideoTracks().forEach(vt => { vt.stop(); localStream.removeTrack(vt); });
+    applyOutboundTracks();
   } else {
     try {
       const newStream = await navigator.mediaDevices.getUserMedia({
         video: selectedCamId ? { deviceId: { exact: selectedCamId } } : true
       });
       const newTrack = newStream.getVideoTracks()[0];
-      localStream.getVideoTracks().forEach(t => localStream.removeTrack(t));
+      localStream.getVideoTracks().forEach(vt => { vt.stop(); localStream.removeTrack(vt); });
       localStream.addTrack(newTrack);
-      // Ekran paylaşımı aktifken peer track'lerine dokunma (screen track bozulur)
-      if (!screenOn) {
-        let needsRenegotiation = false;
-        for (const pc of Object.values(peerConnections)) {
-          const sender = pc.getSenders().find(s => s.track === null || (s.track && s.track.kind === 'video'));
-          if (sender) {
-            sender.replaceTrack(newTrack).catch(()=>{});
-          } else {
-            pc.addTrack(newTrack, localStream);
-            needsRenegotiation = true;
-          }
-        }
-        if (needsRenegotiation) await sendRenegotiation();
-      }
+      applyOutboundTracks();
     } catch(e) {
       camOn = false;
       btn.classList.add('off');
-      btn.innerHTML = `📵 <span class="ctrl-label">Kapalı</span>`;
-      showToast('Kamera açılamadı: ' + e.message);
+      btn.innerHTML = `📵 <span class="ctrl-label">${t('Kapalı')}</span>`;
+      showToast(t('Kamera açılamadı: ') + e.message);
     }
   }
   renderMyTile();
+  publishMyState();
 };
 
 // ══════════════════════════════════════════════════════
 //  SCREEN SHARE
 // ══════════════════════════════════════════════════════
-
-// replaceTrack sonrası tüm bağlı peer'lara yeni offer göndererek SDP renegotiationı tetikler
-async function sendRenegotiation() {
-  for (const [remoteUid, pc] of Object.entries(peerConnections)) {
-    if (pc.connectionState !== 'connected') continue;
-    try {
-      const offer = await pc.createOffer();
-      await pc.setLocalDescription(offer);
-      await set(ref(db, `rooms/${currentRoom}/rtc/${remoteUid}/${currentUser.uid}/offer`), {
-        sdp: offer.sdp, ts: Date.now()
-      });
-      console.log(`[RTC] renegotiation offer → ${remoteUid.slice(0,6)}`);
-    } catch(e) { console.error('[RTC] sendRenegotiation:', e); }
-  }
-}
 
 window.requestScreen = async function() {
   if (screenOn) { stopScreen(); return; }
@@ -2205,24 +2464,11 @@ async function startScreen() {
     screenOn = true;
     const btn = document.getElementById('screenBtn');
     btn.classList.add('active-screen');
-    btn.innerHTML = `🖥️ <span class="ctrl-label">Durdur</span>`;
+    btn.innerHTML = `🖥️ <span class="ctrl-label">${t('Durdur')}</span>`;
     screenStream.getVideoTracks()[0].onended = () => stopScreen();
 
-    // Mevcut peer bağlantılarında video track'i ekran track'iyle değiştir
-    const screenTrack = screenStream.getVideoTracks()[0];
-    for (const pc of Object.values(peerConnections)) {
-      const sender = pc.getSenders().find(s =>
-        s.track === null || (s.track && s.track.kind === 'video')
-      );
-      if (sender) {
-        await sender.replaceTrack(screenTrack);
-      } else {
-        pc.addTrack(screenTrack, screenStream);
-      }
-    }
-
-    // replaceTrack tek başına karşıya ulaşmıyor — SDP renegotiation gerekli
-    await sendRenegotiation();
+    applyOutboundTracks();
+    publishMyState();
 
     // Kendi tile'ını ekran stream'iyle güncelle
     const localTile = document.getElementById(`tile-${currentUser.uid}`);
@@ -2249,24 +2495,11 @@ async function stopScreen() {
   screenOn = false;
   const btn = document.getElementById('screenBtn');
   btn.classList.remove('active-screen');
-  btn.innerHTML = `🖥️ <span class="ctrl-label">Ekran</span>`;
+  btn.innerHTML = `🖥️ <span class="ctrl-label">${t('Ekran')}</span>`;
 
   // Kamera track'ini geri yükle (kapalıysa null gönder)
-  for (const pc of Object.values(peerConnections)) {
-    const sender = pc.getSenders().find(s =>
-      s.track === null || (s.track && s.track.kind === 'video')
-    );
-    if (!sender) continue;
-    if (camOn && localStream) {
-      const camTrack = localStream.getVideoTracks()[0];
-      await sender.replaceTrack(camTrack || null).catch(() => {});
-    } else {
-      await sender.replaceTrack(null).catch(() => {});
-    }
-  }
-
-  // replaceTrack'ten sonra renegotiation ile karşıya bildir
-  await sendRenegotiation();
+  applyOutboundTracks();
+  publishMyState();
 
   // Kendi tile'ını kameraya geri döndür
   renderMyTile();
@@ -2403,6 +2636,7 @@ window.leaveRoom = async function(forced = false) {
   stopScreen();
   stopSpeakerDetection();
   stopQualityMonitor();
+  stopRtcWatchdog();
   stopRecording();
   unpin();
   pendingJoinRequests = [];
@@ -2413,7 +2647,12 @@ window.leaveRoom = async function(forced = false) {
   // Close all peer connections
   for (const uid of Object.keys(peerStates)) closePeer(uid);
   Object.keys(knownParticipants).forEach(k => delete knownParticipants[k]);
+  Object.keys(rtcUnsubs).forEach(k => {
+    (rtcUnsubs[k] || []).forEach(fn => { try { fn(); } catch(e) {} });
+    delete rtcUnsubs[k];
+  });
   Object.keys(rtcListeners).forEach(k => delete rtcListeners[k]);
+  Object.keys(sigQueue).forEach(k => delete sigQueue[k]);
   processedOffers.clear();
 
   if (currentRoom) {
@@ -2424,7 +2663,9 @@ window.leaveRoom = async function(forced = false) {
       await remove(ref(db, `rooms/${code}`)).catch(()=>{});
     } else {
       await remove(ref(db, `rooms/${code}/participants/${currentUser.uid}`)).catch(()=>{});
-      await remove(ref(db, `rooms/${code}/signals/${currentUser.uid}`)).catch(()=>{});
+      await remove(ref(db, `rooms/${code}/rtc/${currentUser.uid}`)).catch(()=>{});
+      // Host kilidi odadan çıkınca kalkmalı — kalırsa sonraki girişte sessizce susturuluyordu
+      await remove(ref(db, `rooms/${code}/controls/${currentUser.uid}`)).catch(()=>{});
     }
   }
 
@@ -2434,14 +2675,14 @@ window.leaveRoom = async function(forced = false) {
   micOn = true; camOn = true; screenOn = false; pinnedUid = null; lastSpeaker = null;
   handRaised = false;
   const hBtn = document.getElementById('raiseHandBtn');
-  if (hBtn) { hBtn.classList.remove('raised'); hBtn.innerHTML = '✋ <span class="ctrl-label">El Kaldır</span>'; }
+  if (hBtn) { hBtn.classList.remove('raised'); hBtn.innerHTML = `✋ <span class="ctrl-label">${t('El Kaldır')}</span>`; }
   devicePickerCode = null;
   document.getElementById('micBtn').className = 'ctrl-btn';
-  document.getElementById('micBtn').innerHTML = '🎤 <span class="ctrl-label">Mikrofon</span>';
+  document.getElementById('micBtn').innerHTML = `🎤 <span class="ctrl-label">${t('Mikrofon')}</span>`;
   document.getElementById('camBtn').className = 'ctrl-btn';
-  document.getElementById('camBtn').innerHTML = '📷 <span class="ctrl-label">Kamera</span>';
+  document.getElementById('camBtn').innerHTML = `📷 <span class="ctrl-label">${t('Kamera')}</span>`;
   document.getElementById('screenBtn').className = 'ctrl-btn';
-  document.getElementById('screenBtn').innerHTML = '🖥️ <span class="ctrl-label">Ekran</span>';
+  document.getElementById('screenBtn').innerHTML = `🖥️ <span class="ctrl-label">${t('Ekran')}</span>`;
   showScreen('lobbyScreen');
 };
 
@@ -2561,31 +2802,37 @@ function stopQualityMonitor() {
 }
 
 async function updateQuality() {
-  const pcs = Object.values(peerConnections);
+  // Tüm bağlı peer'lar toplanır — eskiden sadece pcs[0] okunuyordu ve sıra
+  // değiştiğinde bitrate farkı anlamsız değerler üretiyordu
+  const pcs = Object.values(peerConnections).filter(pc => pc.connectionState === 'connected');
   if (!pcs.length) return;
-  const pc = pcs[0]; // ilk peer'ın stats'ını al
   try {
-    const stats = await pc.getStats();
     let rtt=null, loss=null, vbr=null, abr=null, res='—', fps=null;
     let prevV = lastStats.videoBytes || 0, prevA = lastStats.audioBytes || 0;
-    let nowV=0, nowA=0;
+    let nowV=0, nowA=0, lostSum=0, recvSum=0, rttMax=null;
 
-    stats.forEach(s => {
-      if (s.type === 'candidate-pair' && s.state === 'succeeded') {
-        rtt  = s.currentRoundTripTime != null ? Math.round(s.currentRoundTripTime*1000) : null;
-      }
-      if (s.type === 'inbound-rtp' && s.kind === 'video') {
-        loss = s.packetsLost != null && s.packetsReceived != null
-          ? ((s.packetsLost/(s.packetsLost+s.packetsReceived+1))*100).toFixed(1)
-          : null;
-        fps  = s.framesPerSecond != null ? Math.round(s.framesPerSecond) : null;
-        if (s.frameWidth && s.frameHeight) res = `${s.frameWidth}×${s.frameHeight}`;
-        nowV = s.bytesReceived || 0;
-      }
-      if (s.type === 'inbound-rtp' && s.kind === 'audio') {
-        nowA = s.bytesReceived || 0;
-      }
+    const all = await Promise.all(pcs.map(pc => pc.getStats().catch(()=>null)));
+    all.forEach(stats => {
+      if (!stats) return;
+      stats.forEach(s => {
+        if (s.type === 'candidate-pair' && s.state === 'succeeded' && s.currentRoundTripTime != null) {
+          const r = Math.round(s.currentRoundTripTime*1000);
+          if (rttMax == null || r > rttMax) rttMax = r;
+        }
+        if (s.type === 'inbound-rtp' && s.kind === 'video') {
+          lostSum += s.packetsLost || 0;
+          recvSum += s.packetsReceived || 0;
+          if (s.framesPerSecond != null) fps = Math.round(s.framesPerSecond);
+          if (s.frameWidth && s.frameHeight) res = `${s.frameWidth}×${s.frameHeight}`;
+          nowV += s.bytesReceived || 0;
+        }
+        if (s.type === 'inbound-rtp' && s.kind === 'audio') {
+          nowA += s.bytesReceived || 0;
+        }
+      });
     });
+    rtt = rttMax;
+    if (recvSum > 0) loss = ((lostSum/(lostSum+recvSum))*100).toFixed(1);
 
     // Bitrate hesapla (bytes/3sn → kbps)
     if (nowV > prevV) vbr = Math.round((nowV-prevV)*8/3/1000);
@@ -2658,7 +2905,7 @@ window.toggleWhiteboard = function() {
     wbWrap.style.display  = '';
     overlay.style.display = 'none';
     toolbar.style.display = 'flex';
-    btn.innerHTML = `✏️ <span class="ctrl-label">Kapat</span>`;
+    btn.innerHTML = `✏️ <span class="ctrl-label">${t('Kapat')}</span>`;
     btn.classList.add('active-screen');
     if (!wbCtx) {
       // Canvas görünür olduktan sonra init et
@@ -2882,7 +3129,9 @@ window.toggleRecording = async function() {
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
     a.href = url; a.download = `solikez-${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.webm`;
-    a.click(); URL.revokeObjectURL(url);
+    a.click();
+    // Hemen revoke etmek bazı tarayıcılarda indirmeyi iptal ediyordu
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
     recordedChunks = [];
     showToast('Kayıt indirildi.');
   };
@@ -3033,7 +3282,7 @@ function listenPoll(code) {
 
 window.copyRoomCode = function() {
   navigator.clipboard.writeText(currentRoom)
-    .then(() => showToast('Oda kodu kopyalandı: ' + currentRoom));
+    .then(() => showToast(t('Oda kodu kopyalandı: ') + currentRoom));
 };
 
 // ══════════════════════════════════════════════════════
@@ -3056,13 +3305,13 @@ window.changeUsername = async function() {
   const newName = document.getElementById('newUsername').value.trim();
   const msgEl   = document.getElementById('usernameMsg');
   msgEl.className = 'profile-msg';
-  if (!newName || newName.length < 3) { msgEl.textContent = 'En az 3 karakter olmalı.'; msgEl.className = 'profile-msg err'; return; }
-  if (!/^[a-zA-Z0-9_]+$/.test(newName)) { msgEl.textContent = 'Sadece harf, rakam ve _ kullanılabilir.'; msgEl.className = 'profile-msg err'; return; }
-  if (newName.toLowerCase() === currentUser.username.toLowerCase()) { msgEl.textContent = 'Aynı kullanıcı adı.'; msgEl.className = 'profile-msg err'; return; }
+  if (!newName || newName.length < 3) { msgEl.textContent = t('En az 3 karakter olmalı.'); msgEl.className = 'profile-msg err'; return; }
+  if (!/^[a-zA-Z0-9_]+$/.test(newName)) { msgEl.textContent = t('Sadece harf, rakam ve _ kullanılabilir.'); msgEl.className = 'profile-msg err'; return; }
+  if (newName.toLowerCase() === currentUser.username.toLowerCase()) { msgEl.textContent = t('Aynı kullanıcı adı.'); msgEl.className = 'profile-msg err'; return; }
 
   // Check if taken
   const snap = await get(ref(db, `usernames/${newName.toLowerCase()}`));
-  if (snap.exists()) { msgEl.textContent = 'Bu kullanıcı adı alınmış.'; msgEl.className = 'profile-msg err'; return; }
+  if (snap.exists()) { msgEl.textContent = t('Bu kullanıcı adı alınmış.'); msgEl.className = 'profile-msg err'; return; }
 
   try {
     // Remove old, add new
@@ -3073,7 +3322,7 @@ window.changeUsername = async function() {
     // Update lobby UI
     document.getElementById('lobbyAvatar').textContent   = initials(newName);
     document.getElementById('lobbyUsername').textContent = newName;
-    msgEl.textContent = 'Kullanıcı adı güncellendi!'; msgEl.className = 'profile-msg ok';
+    msgEl.textContent = t('Kullanıcı adı güncellendi!'); msgEl.className = 'profile-msg ok';
   } catch(e) {
     msgEl.textContent = 'Hata: ' + e.message; msgEl.className = 'profile-msg err';
   }
@@ -3085,9 +3334,9 @@ window.changePassword = async function() {
   const np2  = document.getElementById('newPass2').value;
   const msgEl = document.getElementById('passwordMsg');
   msgEl.className = 'profile-msg';
-  if (!cur || !np || !np2) { msgEl.textContent = 'Tüm alanları doldur.'; msgEl.className = 'profile-msg err'; return; }
-  if (np.length < 6) { msgEl.textContent = 'Yeni şifre en az 6 karakter.'; msgEl.className = 'profile-msg err'; return; }
-  if (np !== np2)    { msgEl.textContent = 'Şifreler eşleşmiyor.'; msgEl.className = 'profile-msg err'; return; }
+  if (!cur || !np || !np2) { msgEl.textContent = t('Tüm alanları doldur.'); msgEl.className = 'profile-msg err'; return; }
+  if (np.length < 6) { msgEl.textContent = t('Yeni şifre en az 6 karakter.'); msgEl.className = 'profile-msg err'; return; }
+  if (np !== np2)    { msgEl.textContent = t('Şifreler eşleşmiyor.'); msgEl.className = 'profile-msg err'; return; }
   try {
     const user = auth.currentUser;
     const cred = EmailAuthProvider.credential(user.email, cur);
@@ -3096,7 +3345,7 @@ window.changePassword = async function() {
     document.getElementById('currentPass').value = '';
     document.getElementById('newPass').value     = '';
     document.getElementById('newPass2').value    = '';
-    msgEl.textContent = 'Şifre başarıyla güncellendi!'; msgEl.className = 'profile-msg ok';
+    msgEl.textContent = t('Şifre başarıyla güncellendi!'); msgEl.className = 'profile-msg ok';
   } catch(e) {
     const msg = e.code === 'auth/wrong-password' ? 'Mevcut şifre hatalı.' : e.message;
     msgEl.textContent = msg; msgEl.className = 'profile-msg err';
@@ -3191,17 +3440,11 @@ window.confirmDevice = async function() {
       });
       if (localStream) { localStream.getTracks().forEach(t => t.stop()); }
       localStream = newStream;
-      // Replace tracks in all peer connections
-      for (const pc of Object.values(peerConnections)) {
-        for (const track of newStream.getTracks()) {
-          const sender = pc.getSenders().find(s => s.track && s.track.kind === track.kind);
-          if (sender) sender.replaceTrack(track);
-        }
-      }
       camOn = true; micOn = true;
+      applyOutboundTracks();
       renderMyTile();
       showToast('Cihazlar değiştirildi.');
-    } catch(e) { showToast('Cihaz değiştirilemedi: ' + e.message); }
+    } catch(e) { showToast(t('Cihaz değiştirilemedi: ') + e.message); }
     return;
   }
 
@@ -3214,15 +3457,15 @@ window.joinRoomCheck = async function() {
   const code  = document.getElementById('joinCodeInput').value.trim().toUpperCase();
   const errEl = document.getElementById('joinError');
   errEl.textContent = '';
-  if (!code || code.length < 3) { errEl.textContent = 'Geçersiz kod.'; return; }
+  if (!code || code.length < 3) { errEl.textContent = t('Geçersiz kod.'); return; }
   const snap = await get(ref(db, `rooms/${code}`));
-  if (!snap.exists()) { errEl.textContent = 'Oda bulunamadı.'; return; }
+  if (!snap.exists()) { errEl.textContent = t('Oda bulunamadı.'); return; }
   const roomData = snap.val();
   if (roomData.hasPassword) {
     const pass = document.getElementById('joinPassword').value;
-    if (!pass) { errEl.textContent = '🔒 Bu oda şifreli — şifreyi girin.'; return; }
+    if (!pass) { errEl.textContent = t('🔒 Bu oda şifreli — şifreyi girin.'); return; }
     const hash = btoa(unescape(encodeURIComponent(pass)));
-    if (hash !== roomData.passwordHash) { errEl.textContent = 'Şifre yanlış.'; return; }
+    if (hash !== roomData.passwordHash) { errEl.textContent = t('Şifre yanlış.'); return; }
   }
   openDevicePicker('join', code);
 };
